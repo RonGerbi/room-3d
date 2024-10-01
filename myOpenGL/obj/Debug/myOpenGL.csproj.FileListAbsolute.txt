@@ -1,0 +1,9 @@
+C:\Users\רון\Desktop\‏‏תיקיה חדשה (2)\P5\3Dtransformations\myOpenGL\bin\Debug\myOpenGL.exe
+C:\Users\רון\Desktop\‏‏תיקיה חדשה (2)\P5\3Dtransformations\myOpenGL\bin\Debug\myOpenGL.pdb
+C:\Users\רון\Desktop\‏‏תיקיה חדשה (2)\P5\3Dtransformations\myOpenGL\obj\Debug\myOpenGL.csproj.AssemblyReference.cache
+C:\Users\רון\Desktop\‏‏תיקיה חדשה (2)\P5\3Dtransformations\myOpenGL\obj\Debug\myOpenGL.Form1.resources
+C:\Users\רון\Desktop\‏‏תיקיה חדשה (2)\P5\3Dtransformations\myOpenGL\obj\Debug\myOpenGL.Properties.Resources.resources
+C:\Users\רון\Desktop\‏‏תיקיה חדשה (2)\P5\3Dtransformations\myOpenGL\obj\Debug\myOpenGL.csproj.GenerateResource.cache
+C:\Users\רון\Desktop\‏‏תיקיה חדשה (2)\P5\3Dtransformations\myOpenGL\obj\Debug\myOpenGL.csproj.CoreCompileInputs.cache
+C:\Users\רון\Desktop\‏‏תיקיה חדשה (2)\P5\3Dtransformations\myOpenGL\obj\Debug\myOpenGL.exe
+C:\Users\רון\Desktop\‏‏תיקיה חדשה (2)\P5\3Dtransformations\myOpenGL\obj\Debug\myOpenGL.pdb

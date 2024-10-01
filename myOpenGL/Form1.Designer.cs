@@ -65,15 +65,17 @@ namespace myOpenGL
             // panel1
             // 
             this.panel1.BackColor = System.Drawing.SystemColors.ButtonFace;
-            this.panel1.Location = new System.Drawing.Point(12, 16);
+            this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(705, 555);
+            this.panel1.Size = new System.Drawing.Size(856, 576);
             this.panel1.TabIndex = 6;
             this.panel1.Paint += new System.Windows.Forms.PaintEventHandler(this.panel1_Paint);
             this.panel1.Resize += new System.EventHandler(this.panel1_Resize);
             // 
             // hScrollBar1
             // 
+            this.hScrollBar1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.hScrollBar1.Location = new System.Drawing.Point(724, 12);
             this.hScrollBar1.Maximum = 200;
             this.hScrollBar1.Name = "hScrollBar1";
@@ -84,6 +86,7 @@ namespace myOpenGL
             // 
             // hScrollBar2
             // 
+            this.hScrollBar2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.hScrollBar2.Location = new System.Drawing.Point(724, 33);
             this.hScrollBar2.Maximum = 200;
             this.hScrollBar2.Name = "hScrollBar2";
@@ -94,6 +97,7 @@ namespace myOpenGL
             // 
             // hScrollBar3
             // 
+            this.hScrollBar3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.hScrollBar3.Location = new System.Drawing.Point(724, 54);
             this.hScrollBar3.Maximum = 200;
             this.hScrollBar3.Name = "hScrollBar3";
@@ -104,6 +108,7 @@ namespace myOpenGL
             // 
             // hScrollBar4
             // 
+            this.hScrollBar4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.hScrollBar4.Location = new System.Drawing.Point(724, 84);
             this.hScrollBar4.Maximum = 200;
             this.hScrollBar4.Name = "hScrollBar4";
@@ -114,6 +119,7 @@ namespace myOpenGL
             // 
             // hScrollBar5
             // 
+            this.hScrollBar5.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.hScrollBar5.Location = new System.Drawing.Point(724, 106);
             this.hScrollBar5.Maximum = 200;
             this.hScrollBar5.Name = "hScrollBar5";
@@ -124,6 +130,7 @@ namespace myOpenGL
             // 
             // hScrollBar6
             // 
+            this.hScrollBar6.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.hScrollBar6.Location = new System.Drawing.Point(724, 128);
             this.hScrollBar6.Maximum = 200;
             this.hScrollBar6.Name = "hScrollBar6";
@@ -134,6 +141,7 @@ namespace myOpenGL
             // 
             // hScrollBar9
             // 
+            this.hScrollBar9.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.hScrollBar9.Location = new System.Drawing.Point(723, 204);
             this.hScrollBar9.Maximum = 200;
             this.hScrollBar9.Name = "hScrollBar9";
@@ -144,6 +152,7 @@ namespace myOpenGL
             // 
             // hScrollBar8
             // 
+            this.hScrollBar8.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.hScrollBar8.Location = new System.Drawing.Point(724, 182);
             this.hScrollBar8.Maximum = 200;
             this.hScrollBar8.Name = "hScrollBar8";
@@ -154,6 +163,7 @@ namespace myOpenGL
             // 
             // hScrollBar7
             // 
+            this.hScrollBar7.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.hScrollBar7.Location = new System.Drawing.Point(724, 160);
             this.hScrollBar7.Maximum = 200;
             this.hScrollBar7.Name = "hScrollBar7";
@@ -164,6 +174,7 @@ namespace myOpenGL
             // 
             // groupBox1
             // 
+            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox1.Controls.Add(this.label3);
             this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Controls.Add(this.label1);
@@ -260,6 +271,7 @@ namespace myOpenGL
             // 
             // groupBox2
             // 
+            this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox2.Controls.Add(this.label4);
             this.groupBox2.Controls.Add(this.label5);
             this.groupBox2.Controls.Add(this.label6);
@@ -372,7 +384,8 @@ namespace myOpenGL
             this.Controls.Add(this.hScrollBar1);
             this.Controls.Add(this.panel1);
             this.Name = "Form1";
-            this.Text = "Form1";
+            this.Text = "Room";
+            this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.Load += new System.EventHandler(this.Form1_Load);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();

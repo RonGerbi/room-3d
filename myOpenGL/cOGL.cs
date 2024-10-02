@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
 
@@ -10,7 +10,7 @@ namespace OpenGL
 {
     class cOGL
     {
-        private readonly string r_TexturePath = "C:\\Users\\øåï\\RoomOpenGL\\wood.bmp";
+        private readonly string r_TexturePath = "C:\\Users\\×¨×•×Ÿ\\RoomOpenGL\\wood.bmp";
         private uint[] texture;
         Control p;
         int Width;
@@ -99,6 +99,8 @@ namespace OpenGL
         {
             GL.glTranslatef(-12.5f, 0.0f, 0.0f);
             drawFloor(25f, 0f, 0f, 0f);
+            drawBed();
+            drawCloset();
         }
 
 
@@ -188,7 +190,7 @@ namespace OpenGL
             //The GL.glMultMatrix function multiplies the current matrix by
             //the one specified in its argument.
             //That is, if M is the current matrix and T is the matrix passed to
-            //GL.glMultMatrix, then M is replaced with M • T
+            //GL.glMultMatrix, then M is replaced with M â€¢ T
             GL.glMultMatrixd(CurrentRotationTraslation);
 
             //save the matrix product in AccumulatedRotationsTraslations
@@ -318,11 +320,11 @@ namespace OpenGL
             InitTexture("wood.bmp");
         }
 
-        void InitTexture(string imageBMPfile)
+        private void InitTexture(string imageBMPfile)
         {
             GL.glEnable(GL.GL_TEXTURE_2D);
 
-            texture = new uint[1];		// storage for texture
+            texture = new uint[2];		// storage for texture
 
             Bitmap image = new Bitmap(imageBMPfile);
             image.RotateFlip(RotateFlipType.RotateNoneFlipY); //Y axis in Windows is directed downwards, while in OpenGL-upwards
@@ -369,7 +371,7 @@ namespace OpenGL
             GL.glDisable(GL.GL_TEXTURE_2D);
         }
 
-        private void drawCube(float i_Length, float i_RootX, float i_RootY, float i_RootZ, float i_Red, float i_Green, float i_Blue)
+        private void drawRectangle(float i_Length, float i_RootX, float i_RootY, float i_RootZ, float i_Red, float i_Green, float i_Blue)
         {
             // Cube
             GL.glBegin(GL.GL_QUADS);
@@ -513,6 +515,253 @@ namespace OpenGL
             GL.glPopMatrix();
 
             GLU.gluDeleteQuadric(obj);
+        }
+
+        private void drawCube()
+        {
+            GL.glBegin(GL.GL_QUADS);
+            //GL.glColor3f(1.0f, 1.0f, 1.0f);
+            GL.glBindTexture(GL.GL_TEXTURE_2D, texture[1]);
+            //front
+            GL.glNormal3f(0.0f, 0.0f, 1.0f);
+            GL.glTexCoord2f(0.0f, 0.0f);
+            GL.glVertex3f(-10.0f, -10.0f, 10.0f);
+            GL.glTexCoord2f(1.0f, 0.0f);
+            GL.glVertex3f(10.0f, -10.0f, 10.0f);
+            GL.glTexCoord2f(1.0f, 1.0f);
+            GL.glVertex3f(10.0f, 10.0f, 10.0f);
+            GL.glTexCoord2f(0.0f, 1.0f);
+            GL.glVertex3f(-10.0f, 10.0f, 10.0f);
+
+            //back
+            GL.glNormal3f(0.0f, 0.0f, -1.0f);
+            GL.glTexCoord2f(0.0f, 0.0f);
+            GL.glVertex3f(-10.0f, -10.0f, -10.0f);
+            GL.glTexCoord2f(1.0f, 0.0f);
+            GL.glVertex3f(10.0f, -10.0f, -10.0f);
+            GL.glTexCoord2f(1.0f, 1.0f);
+            GL.glVertex3f(10.0f, 10.0f, -10.0f);
+            GL.glTexCoord2f(0.0f, 1.0f);
+            GL.glVertex3f(-10.0f, 10.0f, -10.0f);
+            //top
+            GL.glNormal3f(0.0f, 1.0f, 0.0f);
+            GL.glTexCoord2f(0.0f, 0.0f);
+            GL.glVertex3f(10.0f, 10.0f, 10.0f);
+            GL.glTexCoord2f(1.0f, 0.0f);
+            GL.glVertex3f(10.0f, 10.0f, -10.0f);
+            GL.glTexCoord2f(1.0f, 0.0f);
+            GL.glVertex3f(-10.0f, 10.0f, -10.0f);
+            GL.glTexCoord2f(0.0f, 1.0f);
+            GL.glVertex3f(-10.0f, 10.0f, 10.0f);
+            //bottom
+            GL.glNormal3f(0.0f, -1.0f, 0.0f);
+            GL.glTexCoord2f(0.0f, 0.0f);
+            GL.glVertex3f(10.0f, -10.0f, 10.0f);
+            GL.glTexCoord2f(1.0f, 0.0f);
+            GL.glVertex3f(10.0f, -10.0f, -10.0f);
+            GL.glTexCoord2f(1.0f, 1.0f);
+            GL.glVertex3f(-10.0f, -10.0f, -10.0f);
+            GL.glTexCoord2f(0.0f, 1.0f);
+            GL.glVertex3f(-10.0f, -10.0f, 10.0f);
+            //right
+            GL.glNormal3f(1.0f, 0.0f, 0.0f);
+            GL.glTexCoord2f(0.0f, 0.0f);
+            GL.glVertex3f(10.0f, -10.0f, 10.0f);
+            GL.glTexCoord2f(1.0f, 0.0f);
+            GL.glVertex3f(10.0f, -10.0f, -10.0f);
+            GL.glTexCoord2f(1.0f, 1.0f);
+            GL.glVertex3f(10.0f, 10.0f, -10.0f);
+            GL.glTexCoord2f(0.0f, 1.0f);
+            GL.glVertex3f(10.0f, 10.0f, 10.0f);
+            //left
+            GL.glNormal3f(-1.0f, 0.0f, -1.0f);
+            GL.glTexCoord2f(0.0f, 0.0f);
+            GL.glVertex3f(-10.0f, -10.0f, 10.0f);
+            GL.glTexCoord2f(1.0f, 0.0f);
+            GL.glVertex3f(-10.0f, -10.0f, -10.0f);
+            GL.glTexCoord2f(1.0f, 1.0f);
+            GL.glVertex3f(-10.0f, 10.0f, -10.0f);
+            GL.glTexCoord2f(0.0f, 1.0f);
+            GL.glVertex3f(-10.0f, 10.0f, 10.0f);
+            GL.glEnd();
+        }
+
+        private void drawBed()
+        {
+            // Rotate X + Translate X = BUG.
+            //bed head
+            GL.glPushMatrix();
+            GL.glTranslatef(5.0f, 2.15f, 0.5f);
+            GL.glPushMatrix(); // Save the mat state
+            GL.glTranslatef(-4f, -0.49f, 6.2f); // Change the position of the object by adding values â€‹â€‹to the axes(x,y,z).
+            GL.glScalef(0.05f, 0.16f, 0.5f); // Change the object size. scale(2,2,2) make it bigger twice
+            drawCube();
+            GL.glPopMatrix();
+
+            //bed body
+            GL.glPushMatrix();
+            GL.glTranslatef(0f, -1.1f, 6.2f);
+            GL.glScalef(0.4f, 0.1f, 0.5f); //1, 0.2, 0.9
+            drawCube();
+            GL.glPopMatrix();
+
+            //pillow right far
+            GL.glColor3f(0.627f, 0.322f, 0.176f);
+            GL.glPushMatrix();
+            GL.glTranslatef(-2.8f, 0.68f, 3.8f);
+            GL.glRotatef(40f, 0f, 0f, 1f);
+            GL.glScalef(0.025f, 0.08f, 0.2f);
+            drawCube();
+            GL.glPopMatrix();
+
+            //pillow left near
+            GL.glColor3f(0.627f, 0.322f, 0.176f);
+            GL.glPushMatrix();
+            GL.glTranslatef(-2.8f, 0.68f, 8.8f);
+            GL.glRotatef(40f, 0f, 0f, 1f);
+            GL.glScalef(0.025f, 0.08f, 0.2f);
+            drawCube();
+            GL.glPopMatrix();
+
+            //blanket
+            GL.glColor3f(0.627f, 0.322f, 0.176f);
+            GL.glPushMatrix();
+            GL.glTranslatef(1.51f, -0.15f, 6.15f);
+            //glRotatef(22, 0,0,1);
+            GL.glScalef(0.25f, 0.025f, 0.51f);
+            drawCube();
+            GL.glPopMatrix();
+        }
+
+        private void drawCloset()
+        {
+            GL.glPushMatrix();
+            GL.glTranslatef(20.0f, 0.0f, 0.0f);
+
+            //wall shelf one
+            GL.glPushMatrix();
+            GL.glTranslatef(1.5f, 2.7f, 3f);
+            GL.glScalef(0.4f, 0.03f, 0.2f);
+            drawCube();
+            GL.glPopMatrix();
+
+            //wall shelf two
+            GL.glPushMatrix();
+            GL.glTranslatef(1f, 2.3f, 3f);
+            GL.glScalef(0.4f, 0.03f, 0.2f);
+            drawCube();
+            GL.glPopMatrix();
+
+            //wall shelf three
+            GL.glPushMatrix();
+            GL.glTranslatef(0.5f, 1.9f, 3f);
+            GL.glScalef(0.4f, 0.03f, 0.2f);
+            drawCube();
+            GL.glPopMatrix();
+
+            //wall shelf four
+            GL.glPushMatrix();
+            GL.glTranslatef(1f, 1.5f, 3f);
+            GL.glScalef(0.4f, 0.03f, 0.2f);
+            drawCube();
+            GL.glPopMatrix();
+
+            //wall shelf five
+            GL.glPushMatrix();
+            GL.glTranslatef(1.5f, 1.1f, 3f);
+            GL.glScalef(0.4f, 0.03f, 0.2f);
+            drawCube();
+            GL.glPopMatrix();
+
+            //showpiece on the bottom shelf from left 1
+            GL.glPushMatrix();
+            GL.glTranslatef(1.5f, 1.2f, 3f);
+            GL.glScalef(0.04f, 0.06f, 0.2f);
+            drawCube();
+            GL.glPopMatrix();
+
+            //showpiece on the bottom shelf from left 2
+            GL.glPushMatrix();
+            GL.glTranslatef(2f, 1.2f, 3f);
+            GL.glScalef(0.04f, 0.06f, 0.2f);
+            drawCube();
+            GL.glPopMatrix();
+
+            //showpiece on the bottom shelf from left 3 lower portion
+            GL.glPushMatrix();
+            GL.glTranslatef(2.5f, 1.2f, 3f);
+            GL.glScalef(0.04f, 0.06f, 0.2f);
+            drawCube();
+            GL.glPopMatrix();
+
+            //showpiece on the bottom shelf from left 3 upper portion
+            GL.glPushMatrix();
+            GL.glTranslatef(2.51f, 1.35f, 3f);
+            GL.glScalef(0.01f, 0.05f, 0.2f);
+            drawCube();
+            GL.glPopMatrix();
+
+            //showpiece on the top shelf  left 2
+            GL.glColor3f(0.502f, 0.502f, 0.000f);
+            GL.glPushMatrix();
+            GL.glTranslatef(2.5f, 2.71f, 3f);
+            //glRotatef(22, 0,0,1);
+            GL.glScalef(0.05f, 0.16f, 0.01f);
+            drawCube();
+            GL.glPopMatrix();
+
+            //showpiece on the top shelf left 1
+            GL.glPushMatrix();
+            GL.glTranslatef(1.8f, 2.71f, 3f);
+            GL.glScalef(0.16f, 0.1f, 0.01f);
+            drawCube();
+            GL.glPopMatrix();
+
+            //showpiece on 2nd shelf
+            GL.glColor3f(0.416f, 0.353f, 0.804f);
+            GL.glPushMatrix();
+            GL.glTranslatef(1.3f, 2.4f, 3f);
+            GL.glScalef(0.16f, 0.08f, 0.01f);
+            drawCube();
+            GL.glPopMatrix();
+
+            //showpiece on 3rd shelf left 1
+            GL.glPushMatrix();
+            GL.glTranslatef(0.4f, 1.9f, 3f);
+            GL.glScalef(0.05f, 0.16f, 0.01f);
+            drawCube();
+            GL.glPopMatrix();
+
+            //showpiece on 3rd shelf left 2
+            GL.glPushMatrix();
+            GL.glTranslatef(0.7f, 1.9f, 3f);
+            GL.glScalef(0.05f, 0.12f, 0.01f);
+            drawCube();
+            GL.glPopMatrix();
+
+            //showpiece on 3rd shelf left 3
+            GL.glColor3f(0.600f, 0.196f, 0.800f);
+            GL.glPushMatrix();
+            GL.glTranslatef(1f, 1.9f, 3f);
+            GL.glScalef(0.05f, 0.09f, 0.01f);
+            drawCube();
+            GL.glPopMatrix();
+
+            //showpiece on 4th shelf
+            GL.glPushMatrix();
+            GL.glTranslatef(1.8f, 1.5f, 3f);
+            GL.glScalef(0.2f, 0.1f, 0.2f);
+            //drawPyramid();
+            GL.glPopMatrix();
+
+            //showpiece on 4th shelf
+            GL.glPushMatrix();
+            GL.glTranslatef(1.4f, 1.5f, 3f);
+            GL.glScalef(0.15f, 0.1f, 0.2f);
+            //drawPyramid();
+            GL.glPopMatrix();
+
+            GL.glPopMatrix();
         }
     }
 

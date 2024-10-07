@@ -517,11 +517,11 @@ namespace OpenGL
             GLU.gluDeleteQuadric(obj);
         }
 
-        private void drawCube()
+        private void drawCube(float i_Red, float i_Green, float i_Blue)
         {
             GL.glBegin(GL.GL_QUADS);
-            //GL.glColor3f(1.0f, 1.0f, 1.0f);
-            GL.glBindTexture(GL.GL_TEXTURE_2D, texture[1]);
+            GL.glColor3f(i_Red, i_Green, i_Blue);
+            //GL.glBindTexture(GL.GL_TEXTURE_2D, texture[1]);
             //front
             GL.glNormal3f(0.0f, 0.0f, 1.0f);
             GL.glTexCoord2f(0.0f, 0.0f);
@@ -595,14 +595,14 @@ namespace OpenGL
             GL.glPushMatrix(); // Save the mat state
             GL.glTranslatef(-4f, -0.49f, 6.2f); // Change the position of the object by adding values ​​to the axes(x,y,z).
             GL.glScalef(0.05f, 0.16f, 0.5f); // Change the object size. scale(2,2,2) make it bigger twice
-            drawCube();
+            drawCube(1.0f, 1.0f, 0.0f);
             GL.glPopMatrix();
 
             //bed body
             GL.glPushMatrix();
             GL.glTranslatef(0f, -1.1f, 6.2f);
             GL.glScalef(0.4f, 0.1f, 0.5f); //1, 0.2, 0.9
-            drawCube();
+            drawCube(1.0f, 1.0f, 0.0f);
             GL.glPopMatrix();
 
             //pillow right far
@@ -611,7 +611,7 @@ namespace OpenGL
             GL.glTranslatef(-2.8f, 0.68f, 3.8f);
             GL.glRotatef(40f, 0f, 0f, 1f);
             GL.glScalef(0.025f, 0.08f, 0.2f);
-            drawCube();
+            drawCube(1.0f, 1.0f, 0.0f);
             GL.glPopMatrix();
 
             //pillow left near
@@ -620,7 +620,7 @@ namespace OpenGL
             GL.glTranslatef(-2.8f, 0.68f, 8.8f);
             GL.glRotatef(40f, 0f, 0f, 1f);
             GL.glScalef(0.025f, 0.08f, 0.2f);
-            drawCube();
+            drawCube(1.0f, 1.0f, 0.0f);
             GL.glPopMatrix();
 
             //blanket
@@ -629,137 +629,95 @@ namespace OpenGL
             GL.glTranslatef(1.51f, -0.15f, 6.15f);
             //glRotatef(22, 0,0,1);
             GL.glScalef(0.25f, 0.025f, 0.51f);
-            drawCube();
+            drawCube(1.0f, 1.0f, 0.0f);
+            GL.glPopMatrix();
             GL.glPopMatrix();
         }
 
         private void drawCloset()
         {
             GL.glPushMatrix();
-            GL.glTranslatef(20.0f, 0.0f, 0.0f);
+            GL.glTranslatef(15.0f, 0.5f, 0.0f);
+            GL.glScalef(1.5f, 1.5f, 1.2f);
+            
+            float shelfHeight = 0.0f;
 
-            //wall shelf one
+            for (int i = 0; i < 5; i++)
+            {
+                //wall shelf
+                GL.glPushMatrix();
+                GL.glTranslatef(1.5f, shelfHeight, 3.0f);
+                GL.glScalef(0.4f, 0.03f, 0.2f);
+                drawCube(1.0f, 1.0f, 0.0f);
+                GL.glPopMatrix();
+
+                shelfHeight += 2.5f;
+            }
+
+            float drawerXLength = -2.43f;
+
+            for (int i = 0; i < 4; i++)
+            {
+                // drawer
+                GL.glPushMatrix();
+                GL.glTranslatef(drawerXLength, 1.0f, 3.0f);
+
+                // left side
+                GL.glPushMatrix();
+                GL.glTranslatef(0.0f, 0.25f, 0.0f);
+                GL.glScalef(0.005f, 0.095f, 0.2f);
+                drawCube(1.0f, 0.0f, 1.0f);
+                GL.glPopMatrix();
+
+                // right side
+                GL.glPushMatrix();
+                GL.glTranslatef(1.9f, 0.25f, 0.0f);
+                GL.glScalef(0.005f, 0.095f, 0.2f);
+                drawCube(1.0f, 0.0f, 0.0f);
+                GL.glPopMatrix();
+
+                // down side
+                GL.glPushMatrix();
+                GL.glTranslatef(0.95f, -0.63f, 0.0f);
+                GL.glScalef(0.088f, 0.005f, 0.2f);
+                drawCube(1.0f, 1.0f, 1.0f);
+                GL.glPopMatrix();
+
+                // front side
+                GL.glPushMatrix();
+                GL.glTranslatef(0.95f, 0.2f, 2.02f);
+                GL.glScalef(0.1f, 0.15f, 0.001f);
+                drawCube(1.0f, 1.0f, 1.0f);
+                GL.glPopMatrix();
+
+                GL.glPopMatrix();
+
+                drawerXLength += 1.99f;
+            }
+
+            // left side
             GL.glPushMatrix();
-            GL.glTranslatef(1.5f, 2.7f, 3f);
-            GL.glScalef(0.4f, 0.03f, 0.2f);
+            GL.glTranslatef(-2.5f, 5.0f, 3f);
+            GL.glScalef(0.001f, 0.53f, 0.2f);
+            drawCube(1.0f, 0.0f, 1.0f);
+            GL.glPopMatrix();
+
+            // right side
+            GL.glPushMatrix();
+            GL.glTranslatef(5.5f, 5.0f, 3f);
+            GL.glScalef(0.001f, 0.53f, 0.2f);
+            drawCube(1.0f, 0.0f, 1.0f);
+            GL.glPopMatrix();
+
+            //back side
+            /*
+            GL.glPushMatrix();
+            GL.glRotatef(90.0f, 0.0f, 1.0f, 0.0f);
+            GL.glTranslatef(-1.0f, 5.0f, 1.5f);
+            GL.glScalef(0.001f, 0.53f, 0.4f);
             drawCube();
             GL.glPopMatrix();
-
-            //wall shelf two
-            GL.glPushMatrix();
-            GL.glTranslatef(1f, 2.3f, 3f);
-            GL.glScalef(0.4f, 0.03f, 0.2f);
-            drawCube();
-            GL.glPopMatrix();
-
-            //wall shelf three
-            GL.glPushMatrix();
-            GL.glTranslatef(0.5f, 1.9f, 3f);
-            GL.glScalef(0.4f, 0.03f, 0.2f);
-            drawCube();
-            GL.glPopMatrix();
-
-            //wall shelf four
-            GL.glPushMatrix();
-            GL.glTranslatef(1f, 1.5f, 3f);
-            GL.glScalef(0.4f, 0.03f, 0.2f);
-            drawCube();
-            GL.glPopMatrix();
-
-            //wall shelf five
-            GL.glPushMatrix();
-            GL.glTranslatef(1.5f, 1.1f, 3f);
-            GL.glScalef(0.4f, 0.03f, 0.2f);
-            drawCube();
-            GL.glPopMatrix();
-
-            //showpiece on the bottom shelf from left 1
-            GL.glPushMatrix();
-            GL.glTranslatef(1.5f, 1.2f, 3f);
-            GL.glScalef(0.04f, 0.06f, 0.2f);
-            drawCube();
-            GL.glPopMatrix();
-
-            //showpiece on the bottom shelf from left 2
-            GL.glPushMatrix();
-            GL.glTranslatef(2f, 1.2f, 3f);
-            GL.glScalef(0.04f, 0.06f, 0.2f);
-            drawCube();
-            GL.glPopMatrix();
-
-            //showpiece on the bottom shelf from left 3 lower portion
-            GL.glPushMatrix();
-            GL.glTranslatef(2.5f, 1.2f, 3f);
-            GL.glScalef(0.04f, 0.06f, 0.2f);
-            drawCube();
-            GL.glPopMatrix();
-
-            //showpiece on the bottom shelf from left 3 upper portion
-            GL.glPushMatrix();
-            GL.glTranslatef(2.51f, 1.35f, 3f);
-            GL.glScalef(0.01f, 0.05f, 0.2f);
-            drawCube();
-            GL.glPopMatrix();
-
-            //showpiece on the top shelf  left 2
-            GL.glColor3f(0.502f, 0.502f, 0.000f);
-            GL.glPushMatrix();
-            GL.glTranslatef(2.5f, 2.71f, 3f);
-            //glRotatef(22, 0,0,1);
-            GL.glScalef(0.05f, 0.16f, 0.01f);
-            drawCube();
-            GL.glPopMatrix();
-
-            //showpiece on the top shelf left 1
-            GL.glPushMatrix();
-            GL.glTranslatef(1.8f, 2.71f, 3f);
-            GL.glScalef(0.16f, 0.1f, 0.01f);
-            drawCube();
-            GL.glPopMatrix();
-
-            //showpiece on 2nd shelf
-            GL.glColor3f(0.416f, 0.353f, 0.804f);
-            GL.glPushMatrix();
-            GL.glTranslatef(1.3f, 2.4f, 3f);
-            GL.glScalef(0.16f, 0.08f, 0.01f);
-            drawCube();
-            GL.glPopMatrix();
-
-            //showpiece on 3rd shelf left 1
-            GL.glPushMatrix();
-            GL.glTranslatef(0.4f, 1.9f, 3f);
-            GL.glScalef(0.05f, 0.16f, 0.01f);
-            drawCube();
-            GL.glPopMatrix();
-
-            //showpiece on 3rd shelf left 2
-            GL.glPushMatrix();
-            GL.glTranslatef(0.7f, 1.9f, 3f);
-            GL.glScalef(0.05f, 0.12f, 0.01f);
-            drawCube();
-            GL.glPopMatrix();
-
-            //showpiece on 3rd shelf left 3
-            GL.glColor3f(0.600f, 0.196f, 0.800f);
-            GL.glPushMatrix();
-            GL.glTranslatef(1f, 1.9f, 3f);
-            GL.glScalef(0.05f, 0.09f, 0.01f);
-            drawCube();
-            GL.glPopMatrix();
-
-            //showpiece on 4th shelf
-            GL.glPushMatrix();
-            GL.glTranslatef(1.8f, 1.5f, 3f);
-            GL.glScalef(0.2f, 0.1f, 0.2f);
-            //drawPyramid();
-            GL.glPopMatrix();
-
-            //showpiece on 4th shelf
-            GL.glPushMatrix();
-            GL.glTranslatef(1.4f, 1.5f, 3f);
-            GL.glScalef(0.15f, 0.1f, 0.2f);
-            //drawPyramid();
-            GL.glPopMatrix();
+            */
 
             GL.glPopMatrix();
         }

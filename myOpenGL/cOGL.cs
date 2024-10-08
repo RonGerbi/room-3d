@@ -101,6 +101,7 @@ namespace OpenGL
             drawFloor(25f, 0f, 0f, 0f);
             drawBed();
             drawCloset();
+            drawLamp();
         }
 
 
@@ -640,27 +641,27 @@ namespace OpenGL
             GL.glTranslatef(15.0f, 0.5f, 0.0f);
             GL.glScalef(1.5f, 1.5f, 1.2f);
             
-            float shelfHeight = 0.0f;
+            float shelfHeightDelta = 0.0f;
 
             for (int i = 0; i < 5; i++)
             {
                 //wall shelf
                 GL.glPushMatrix();
-                GL.glTranslatef(1.5f, shelfHeight, 3.0f);
+                GL.glTranslatef(1.5f, shelfHeightDelta, 3.0f);
                 GL.glScalef(0.4f, 0.03f, 0.2f);
                 drawCube(1.0f, 1.0f, 0.0f);
                 GL.glPopMatrix();
 
-                shelfHeight += 2.5f;
+                shelfHeightDelta += 2.5f;
             }
 
-            float drawerXLength = -2.43f;
+            float drawerXDelta = -2.43f;
 
             for (int i = 0; i < 4; i++)
             {
                 // drawer
                 GL.glPushMatrix();
-                GL.glTranslatef(drawerXLength, 1.0f, 3.0f);
+                GL.glTranslatef(drawerXDelta, 1.0f, 3.0f);
 
                 // left side
                 GL.glPushMatrix();
@@ -692,8 +693,34 @@ namespace OpenGL
 
                 GL.glPopMatrix();
 
-                drawerXLength += 1.99f;
+                drawerXDelta += 1.99f;
             }
+
+            float doorXDelta = 2f;
+
+            GL.glPushMatrix();
+            GL.glTranslatef(-0.5f, 0f, 2.02f);
+
+            for (int i = 0; i < 2; i++)
+            {
+                // left door
+                GL.glPushMatrix();
+                GL.glTranslatef(-0.96f, 6.51f, 3.0f);
+                GL.glScalef(0.105f, 0.376f, 0.005f);
+                drawCube(1.0f, 0.0f, 0.0f);
+                GL.glPopMatrix();
+
+                // right door
+                GL.glPushMatrix();
+                GL.glTranslatef(2.95f, 6.51f, 3.0f);
+                GL.glScalef(0.105f, 0.376f, 0.005f);
+                drawCube(0.0f, 1.0f, 0.0f);
+                GL.glPopMatrix();
+
+                GL.glTranslatef(doorXDelta, 0.0f, 0.0f);
+            }
+
+            GL.glPopMatrix();
 
             // left side
             GL.glPushMatrix();
@@ -710,16 +737,31 @@ namespace OpenGL
             GL.glPopMatrix();
 
             //back side
-            /*
+            
             GL.glPushMatrix();
             GL.glRotatef(90.0f, 0.0f, 1.0f, 0.0f);
             GL.glTranslatef(-1.0f, 5.0f, 1.5f);
             GL.glScalef(0.001f, 0.53f, 0.4f);
-            drawCube();
+            drawCube(0.0f, 0.0f, 0.0f);
             GL.glPopMatrix();
-            */
+            
 
             GL.glPopMatrix();
+        }
+
+        private void drawLamp()
+        {
+            GL.glEnable(GL.GL_BLEND);
+
+            GL.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
+            GL.glColor4f(1.0f, 1.0f, 1.0f, 0.5f); 
+
+            GLUquadric obj = GLU.gluNewQuadric();
+
+            GLU.gluSphere(obj, 0.2, 20, 20);
+            GLU.gluDeleteQuadric(obj);
+
+            GL.glDisable(GL.GL_BLEND);
         }
     }
 

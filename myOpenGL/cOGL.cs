@@ -101,6 +101,7 @@ namespace OpenGL
             drawFloor(25f, 0f, 0f, 0f);
             drawBed();
             drawCloset();
+            drawWindow();
             drawLamp();
         }
 
@@ -761,6 +762,65 @@ namespace OpenGL
             drawCube(0.0f, 0.0f, 0.0f);
             GL.glPopMatrix();
             
+
+            GL.glPopMatrix();
+        }
+
+        private void drawWindow()
+        {
+            GL.glPushMatrix();
+
+            GL.glRotatef(90f, 0.0f, 1f, 0.0f);
+            GL.glTranslatef(-12.0f, 8f, 0f);
+
+            // left side
+            GL.glPushMatrix();
+            GL.glScalef(0.01f, 0.3f, 0.01f);
+
+            drawCube(0f, 0f, 0f);
+            GL.glPopMatrix();
+
+            // right side
+            GL.glPushMatrix();
+            GL.glTranslatef(5f, 0f, 0f);
+            GL.glScalef(0.01f, 0.3f, 0.01f);
+            drawCube(0f, 0f, 0f);
+            GL.glPopMatrix();
+
+            GL.glPopMatrix();
+
+            GL.glPushMatrix();
+
+            // down side
+            GL.glRotatef(90f, 1f, 0f, 0f);
+            GL.glTranslatef(0f, 9.5f, -5f);
+
+            GL.glPushMatrix();
+            GL.glScalef(0.02f, 0.27f, 0.01f);
+
+            drawCube(0f, 0f, 0f);
+            GL.glPopMatrix();
+
+            // upper side
+            GL.glPushMatrix();
+            GL.glTranslatef(0f, 0f, -6f);
+            GL.glScalef(0.02f, 0.27f, 0.01f);
+
+            drawCube(0f, 0f, 0f);
+            GL.glPopMatrix();
+
+            float height = 0.6f;
+            // Blinds
+            for (int i = 0; i < 10; i++)
+            {
+                GL.glTranslatef(0f, 0f, -height);
+
+                GL.glPushMatrix();
+                GL.glScalef(0.02f, 0.24f, 0.01f);
+
+                drawCube(0f, 0f, 0f);
+                GL.glPopMatrix();
+            }
 
             GL.glPopMatrix();
         }

@@ -13,6 +13,8 @@ namespace OpenGL
         private readonly string r_TexturePath = "C:\\Users\\רון\\RoomOpenGL\\wood.bmp";
         private uint[] texture;
         Control p;
+        float[,] floor = new float[3, 3];
+        float[] lightPos = new float[4];
         int Width;
         int Height;
 
@@ -21,6 +23,23 @@ namespace OpenGL
             p = pb;
             Width = p.Width;
             Height = p.Height;
+
+            floor[0, 0] = 12.5f;
+            floor[0, 1] = 0f;
+            floor[0, 2] = 25f;
+
+            floor[1, 0] = -12.5f;
+            floor[1, 1] = 0f;
+            floor[1, 2] = 25f;
+
+            floor[2, 0] = -12.5f;
+            floor[2, 1] = 0f;
+            floor[2, 2] = 0f;
+
+            lightPos[0] = 12.5f;
+            lightPos[1] = 17f;
+            lightPos[2] = 12.5f;
+            lightPos[3] = 1.0f;
             InitializeGL();
         }
 
@@ -52,13 +71,6 @@ namespace OpenGL
 
         void DrawOldAxes()
         {
-            //for this time
-            //Lights positioning is here!!!
-            float[] pos = new float[4];
-            pos[0] = 10; pos[1] = 10; pos[2] = 10; pos[3] = 1;
-            GL.glLightfv(GL.GL_LIGHT0, GL.GL_POSITION, pos);
-            GL.glDisable(GL.GL_LIGHTING);
-
             //INITIAL axes
             GL.glEnable(GL.GL_LINE_STIPPLE);
             GL.glLineStipple(1, 0xFF00);  //  dotted   
@@ -97,15 +109,25 @@ namespace OpenGL
         }
         void DrawFigures()
         {
+            GL.glPushMatrix(); // Save the current transformation matrix
             GL.glTranslatef(-12.5f, 0.0f, 0.0f);
             drawFloor(25f, 0f, 0f, 0f);
-            drawBed();
-            drawCloset();
-            drawWindow();
             drawLamp();
+
+            GL.glEnable(GL.GL_LIGHTING);
+
+            DrawObjects(false, 1);
+
+            GL.glDisable(GL.GL_LIGHTING);
+            // Draw shadow
+            GL.glPushMatrix(); // Save matrix for shadow drawing
+            MakeShadowMatrix(floor);
+            GL.glMultMatrixf(cubeXform);
+            DrawObjects(true, 1);
+            GL.glPopMatrix(); // Restore matrix after drawing shadow
+
+            GL.glPopMatrix(); // Restore the initial transformation matrix
         }
-
-
 
         public float[] ScrollValue = new float[10];
         public float zShift = 0.0f;
@@ -203,7 +225,7 @@ namespace OpenGL
             //multiply it by KeyCode defined AccumulatedRotationsTraslations matrix
             GL.glMultMatrixd(AccumulatedRotationsTraslations);
 
-            DrawAxes();
+            //DrawAxes();
 
             DrawFigures();
 
@@ -230,6 +252,16 @@ namespace OpenGL
             pfd.cColorBits = 32;
             pfd.cDepthBits = 32;
             pfd.iLayerType = (byte)(WGL.PFD_MAIN_PLANE);
+
+            //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+            //for Stencil support 
+
+            pfd.cStencilBits = 32;
+
+            //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
             int pixelFormatIndex = 0;
             pixelFormatIndex = WGL.ChoosePixelFormat(m_uint_DC, ref pfd);
@@ -259,22 +291,6 @@ namespace OpenGL
 
 
             initRenderingGL();
-
-            // Enable lighting
-            GL.glEnable(GL.GL_LIGHTING); // Enable lighting
-            GL.glEnable(GL.GL_LIGHT0); // Enable light 0
-
-            float[] lightPos = new float[] { 12.5f, 17.0f, 12.5f, 1.0f }; // Light position
-            float[] lightAmbient = new float[] { 0.2f, 0.2f, 0.2f, 1.0f }; // Ambient light
-            float[] lightDiffuse = new float[] { 1.0f, 1.0f, 1.0f, 1.0f }; // Diffuse light
-            float[] lightSpecular = new float[] { 1.0f, 1.0f, 1.0f, 1.0f }; // Specular light
-
-            GL.glLightfv(GL.GL_LIGHT0, GL.GL_POSITION, lightPos);
-            GL.glLightfv(GL.GL_LIGHT0, GL.GL_AMBIENT, lightAmbient);
-            GL.glLightfv(GL.GL_LIGHT0, GL.GL_DIFFUSE, lightDiffuse);
-            GL.glLightfv(GL.GL_LIGHT0, GL.GL_SPECULAR, lightSpecular);
-
-            GL.glEnable(GL.GL_DEPTH_TEST); // Enable depth testing
         }
 
         public void OnResize()
@@ -287,54 +303,48 @@ namespace OpenGL
 
         protected virtual void initRenderingGL()
         {
-            if (m_uint_DC == 0 || m_uint_RC == 0)
-                return;
-            if (this.Width == 0 || this.Height == 0)
-                return;
-            GL.glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
-            GL.glEnable(GL.GL_DEPTH_TEST);
-            GL.glDepthFunc(GL.GL_LEQUAL);
-
-            GL.glViewport(0, 0, this.Width, this.Height);
-            GL.glMatrixMode(GL.GL_PROJECTION);
-            GL.glLoadIdentity();
-
-            //nice 3D
-            GLU.gluPerspective(45.0, 1.0, 0.4, 100.0);
-
-            GL.glMatrixMode(GL.GL_MODELVIEW);
-            GL.glLoadIdentity();
-
-            //save the current MODELVIEW Matrix (now it is Identity)
-            GL.glGetDoublev(GL.GL_MODELVIEW_MATRIX, AccumulatedRotationsTraslations);
-            int i = 0;
-
-            // background 
-
-            if (m_uint_DC == 0 || m_uint_RC == 0)
-                return;
-            if (this.Width == 0 || this.Height == 0)
+            if (m_uint_DC == 0 || m_uint_RC == 0 || this.Width == 0 || this.Height == 0)
                 return;
 
-            // Set the background color to light blue (RGBA)
-            //GL.glClearColor(0.678f, 0.847f, 0.902f, 1.0f); // Light blue
+            // Set the clear color to a dark gray
             GL.glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+
+            // Enable depth testing
             GL.glEnable(GL.GL_DEPTH_TEST);
             GL.glDepthFunc(GL.GL_LEQUAL);
 
+            // Enable lighting and color material
+            GL.glEnable(GL.GL_LIGHTING);
+            GL.glEnable(GL.GL_LIGHT0);
+            GL.glEnable(GL.GL_COLOR_MATERIAL);
+
+            // Configure the light properties
+            float[] ambientLight = { 0.2f, 0.2f, 0.2f, 1.0f };  // Ambient light
+            float[] diffuseLight = { 0.8f, 0.8f, 0.8f, 1.0f };  // Diffuse light
+            float[] specularLight = { 1.0f, 1.0f, 1.0f, 1.0f }; // Specular light
+
+            // Set light properties
+            GL.glLightfv(GL.GL_LIGHT0, GL.GL_AMBIENT, ambientLight);
+            GL.glLightfv(GL.GL_LIGHT0, GL.GL_DIFFUSE, diffuseLight);
+            GL.glLightfv(GL.GL_LIGHT0, GL.GL_SPECULAR, specularLight);
+            GL.glLightfv(GL.GL_LIGHT0, GL.GL_POSITION, lightPos);
+
+            // Set the viewport to match the window size
             GL.glViewport(0, 0, this.Width, this.Height);
+
+            // Set up the projection matrix
             GL.glMatrixMode(GL.GL_PROJECTION);
             GL.glLoadIdentity();
-
-            // Set up perspective projection
             GLU.gluPerspective(45.0, 1.0, 0.4, 100.0);
 
+            // Switch to the modelview matrix and reset it
             GL.glMatrixMode(GL.GL_MODELVIEW);
             GL.glLoadIdentity();
 
             // Save the current MODELVIEW Matrix (now it is Identity)
             GL.glGetDoublev(GL.GL_MODELVIEW_MATRIX, AccumulatedRotationsTraslations);
 
+            // Initialize texture
             InitTexture("wood.bmp");
         }
 
@@ -535,10 +545,9 @@ namespace OpenGL
             GLU.gluDeleteQuadric(obj);
         }
 
-        private void drawCube(float i_Red, float i_Green, float i_Blue)
+        private void drawCube()
         {
             GL.glBegin(GL.GL_QUADS);
-            GL.glColor3f(i_Red, i_Green, i_Blue);
             //GL.glBindTexture(GL.GL_TEXTURE_2D, texture[1]);
             //front
             GL.glNormal3f(0.0f, 0.0f, 1.0f);
@@ -613,41 +622,38 @@ namespace OpenGL
             GL.glPushMatrix(); // Save the mat state
             GL.glTranslatef(-4f, -0.49f, 6.2f); // Change the position of the object by adding values ​​to the axes(x,y,z).
             GL.glScalef(0.05f, 0.16f, 0.5f); // Change the object size. scale(2,2,2) make it bigger twice
-            drawCube(1.0f, 1.0f, 0.0f);
+            drawCube();
             GL.glPopMatrix();
 
             //bed body
             GL.glPushMatrix();
             GL.glTranslatef(0f, -1.1f, 6.2f);
             GL.glScalef(0.4f, 0.1f, 0.5f); //1, 0.2, 0.9
-            drawCube(1.0f, 1.0f, 0.0f);
+            drawCube();
             GL.glPopMatrix();
 
             //pillow right far
-            GL.glColor3f(0.627f, 0.322f, 0.176f);
             GL.glPushMatrix();
             GL.glTranslatef(-2.8f, 0.68f, 3.8f);
             GL.glRotatef(40f, 0f, 0f, 1f);
             GL.glScalef(0.025f, 0.08f, 0.2f);
-            drawCube(1.0f, 1.0f, 0.0f);
+            drawCube();
             GL.glPopMatrix();
 
             //pillow left near
-            GL.glColor3f(0.627f, 0.322f, 0.176f);
             GL.glPushMatrix();
             GL.glTranslatef(-2.8f, 0.68f, 8.8f);
             GL.glRotatef(40f, 0f, 0f, 1f);
             GL.glScalef(0.025f, 0.08f, 0.2f);
-            drawCube(1.0f, 1.0f, 0.0f);
+            drawCube();
             GL.glPopMatrix();
 
             //blanket
-            GL.glColor3f(0.627f, 0.322f, 0.176f);
             GL.glPushMatrix();
             GL.glTranslatef(1.51f, -0.15f, 6.15f);
             //glRotatef(22, 0,0,1);
             GL.glScalef(0.25f, 0.025f, 0.51f);
-            drawCube(1.0f, 1.0f, 0.0f);
+            drawCube();
             GL.glPopMatrix();
             GL.glPopMatrix();
         }
@@ -666,7 +672,7 @@ namespace OpenGL
                 GL.glPushMatrix();
                 GL.glTranslatef(1.5f, shelfHeightDelta, 3.0f);
                 GL.glScalef(0.4f, 0.03f, 0.2f);
-                drawCube(1.0f, 1.0f, 0.0f);
+                drawCube();
                 GL.glPopMatrix();
 
                 shelfHeightDelta += 2.5f;
@@ -684,28 +690,28 @@ namespace OpenGL
                 GL.glPushMatrix();
                 GL.glTranslatef(0.0f, 0.25f, 0.0f);
                 GL.glScalef(0.005f, 0.095f, 0.2f);
-                drawCube(1.0f, 0.0f, 1.0f);
+                drawCube();
                 GL.glPopMatrix();
 
                 // right side
                 GL.glPushMatrix();
                 GL.glTranslatef(1.9f, 0.25f, 0.0f);
                 GL.glScalef(0.005f, 0.095f, 0.2f);
-                drawCube(1.0f, 0.0f, 0.0f);
+                drawCube();
                 GL.glPopMatrix();
 
                 // down side
                 GL.glPushMatrix();
                 GL.glTranslatef(0.95f, -0.63f, 0.0f);
                 GL.glScalef(0.088f, 0.005f, 0.2f);
-                drawCube(1.0f, 1.0f, 1.0f);
+                drawCube();
                 GL.glPopMatrix();
 
                 // front side
                 GL.glPushMatrix();
                 GL.glTranslatef(0.95f, 0.2f, 2.02f);
                 GL.glScalef(0.1f, 0.15f, 0.001f);
-                drawCube(1.0f, 1.0f, 1.0f);
+                drawCube();
                 GL.glPopMatrix();
 
                 GL.glPopMatrix();
@@ -724,14 +730,14 @@ namespace OpenGL
                 GL.glPushMatrix();
                 GL.glTranslatef(-0.96f, 6.51f, 3.0f);
                 GL.glScalef(0.105f, 0.376f, 0.005f);
-                drawCube(1.0f, 0.0f, 0.0f);
+                drawCube();
                 GL.glPopMatrix();
 
                 // right door
                 GL.glPushMatrix();
                 GL.glTranslatef(2.95f, 6.51f, 3.0f);
                 GL.glScalef(0.105f, 0.376f, 0.005f);
-                drawCube(0.0f, 1.0f, 0.0f);
+                drawCube();
                 GL.glPopMatrix();
 
                 GL.glTranslatef(doorXDelta, 0.0f, 0.0f);
@@ -743,14 +749,14 @@ namespace OpenGL
             GL.glPushMatrix();
             GL.glTranslatef(-2.5f, 5.0f, 3f);
             GL.glScalef(0.001f, 0.53f, 0.2f);
-            drawCube(1.0f, 0.0f, 1.0f);
+            drawCube();
             GL.glPopMatrix();
 
             // right side
             GL.glPushMatrix();
             GL.glTranslatef(5.5f, 5.0f, 3f);
             GL.glScalef(0.001f, 0.53f, 0.2f);
-            drawCube(1.0f, 0.0f, 1.0f);
+            drawCube();
             GL.glPopMatrix();
 
             //back side
@@ -759,7 +765,7 @@ namespace OpenGL
             GL.glRotatef(90.0f, 0.0f, 1.0f, 0.0f);
             GL.glTranslatef(-1.0f, 5.0f, 1.5f);
             GL.glScalef(0.001f, 0.53f, 0.4f);
-            drawCube(0.0f, 0.0f, 0.0f);
+            drawCube();
             GL.glPopMatrix();
             
 
@@ -777,14 +783,14 @@ namespace OpenGL
             GL.glPushMatrix();
             GL.glScalef(0.01f, 0.3f, 0.01f);
 
-            drawCube(0f, 0f, 0f);
+            drawCube();
             GL.glPopMatrix();
 
             // right side
             GL.glPushMatrix();
             GL.glTranslatef(5f, 0f, 0f);
             GL.glScalef(0.01f, 0.3f, 0.01f);
-            drawCube(0f, 0f, 0f);
+            drawCube();
             GL.glPopMatrix();
 
             GL.glPopMatrix();
@@ -798,7 +804,7 @@ namespace OpenGL
             GL.glPushMatrix();
             GL.glScalef(0.02f, 0.27f, 0.01f);
 
-            drawCube(0f, 0f, 0f);
+            drawCube();
             GL.glPopMatrix();
 
             // upper side
@@ -806,7 +812,7 @@ namespace OpenGL
             GL.glTranslatef(0f, 0f, -6f);
             GL.glScalef(0.02f, 0.27f, 0.01f);
 
-            drawCube(0f, 0f, 0f);
+            drawCube();
             GL.glPopMatrix();
 
             float height = 0.6f;
@@ -818,7 +824,7 @@ namespace OpenGL
                 GL.glPushMatrix();
                 GL.glScalef(0.02f, 0.24f, 0.01f);
 
-                drawCube(0f, 0f, 0f);
+                drawCube();
                 GL.glPopMatrix();
             }
 
@@ -845,17 +851,38 @@ namespace OpenGL
 
             GLU.gluDeleteQuadric(obj);
             GL.glPopMatrix();
+
+            drawLightSource();
         }
 
-        /*float[] cubeXform = new float[16];
+        private void drawLightSource()
+        {
+            // Draw Light Source
+            GL.glDisable(GL.GL_LIGHTING);
+            GL.glPushMatrix(); // Save matrix before translating for the light source
+            GL.glTranslatef(lightPos[0], lightPos[1], lightPos[2]);
+
+            // Yellow Light source
+            GL.glColor3f(1, 1, 0);
+            GLUT.glutSolidSphere(0.05, 8, 8);
+            GL.glPopMatrix(); // Restore matrix after drawing light source
+
+            // Projection line from source to plane
+            GL.glBegin(GL.GL_LINES);
+            GL.glColor3d(0.5, 0.5, 0);
+            GL.glVertex3d(lightPos[0], floor[0, 1] - 0.01, lightPos[2]);
+            GL.glVertex3d(lightPos[0], lightPos[1], lightPos[2]);
+            GL.glEnd();
+        }
+
+        float[] cubeXform = new float[16];
         private void MakeShadowMatrix(float[,] points)
         {
             float[] planeCoeff = new float[4];
             float dot;
 
             // Find the plane equation coefficients
-            // Find the first three coefficients the same way we
-            // find a normal.
+            // Find the normal based on the adjusted coordinate system
             calcNormal(points, planeCoeff);
 
             // Find the last coefficient by back substitutions
@@ -863,38 +890,42 @@ namespace OpenGL
                 (planeCoeff[0] * points[2, 0]) + (planeCoeff[1] * points[2, 1]) +
                 (planeCoeff[2] * points[2, 2]));
 
-
-            // Dot product of plane and light position
-            dot = planeCoeff[0] * pos[0] +
-                    planeCoeff[1] * pos[1] +
-                    planeCoeff[2] * pos[2] +
-                    planeCoeff[3];
+            // Dot product of the plane and light position
+            dot = planeCoeff[0] * lightPos[0] +
+                  planeCoeff[1] * lightPos[1] +
+                  planeCoeff[2] * lightPos[2] +
+                  planeCoeff[3];
 
             // Now do the projection
+            // Adjust the cubeXform based on the new axis orientation
             // First column
-            cubeXform[0] = dot - pos[0] * planeCoeff[0];
-            cubeXform[4] = 0.0f - pos[0] * planeCoeff[1];
-            cubeXform[8] = 0.0f - pos[0] * planeCoeff[2];
-            cubeXform[12] = 0.0f - pos[0] * planeCoeff[3];
+            cubeXform[0] = dot - lightPos[0] * planeCoeff[0];  // X axis
+            cubeXform[4] = 0.0f - lightPos[0] * planeCoeff[1]; // Y axis (up)
+            cubeXform[8] = 0.0f - lightPos[0] * planeCoeff[2]; // Z axis (forward)
+            cubeXform[12] = 0.0f - lightPos[3] * planeCoeff[3];
 
             // Second column
-            cubeXform[1] = 0.0f - pos[1] * planeCoeff[0];
-            cubeXform[5] = dot - pos[1] * planeCoeff[1];
-            cubeXform[9] = 0.0f - pos[1] * planeCoeff[2];
-            cubeXform[13] = 0.0f - pos[1] * planeCoeff[3];
+            cubeXform[1] = 0.0f - lightPos[1] * planeCoeff[0]; // X axis
+            cubeXform[5] = dot - lightPos[1] * planeCoeff[1];  // Y axis (up)
+            cubeXform[9] = 0.0f - lightPos[1] * planeCoeff[2];  // Z axis (forward)
+            cubeXform[13] = 0.0f - lightPos[3] * planeCoeff[3];
 
             // Third Column
-            cubeXform[2] = 0.0f - pos[2] * planeCoeff[0];
-            cubeXform[6] = 0.0f - pos[2] * planeCoeff[1];
-            cubeXform[10] = dot - pos[2] * planeCoeff[2];
-            cubeXform[14] = 0.0f - pos[2] * planeCoeff[3];
+            cubeXform[2] = 0.0f - lightPos[2] * planeCoeff[0]; // X axis
+            cubeXform[6] = 0.0f - lightPos[2] * planeCoeff[1]; // Y axis (up)
+            cubeXform[10] = dot - lightPos[2] * planeCoeff[2]; // Z axis (forward)
+            cubeXform[14] = 0.0f - lightPos[3] * planeCoeff[3];
 
-            // Fourth Column
-            cubeXform[3] = 0.0f - pos[3] * planeCoeff[0];
-            cubeXform[7] = 0.0f - pos[3] * planeCoeff[1];
-            cubeXform[11] = 0.0f - pos[3] * planeCoeff[2];
-            cubeXform[15] = dot - pos[3] * planeCoeff[3];
+            // Fourth Column (homogeneous coordinate)
+            cubeXform[3] = 0.0f; // Assuming the lightPos[3] is set for the perspective (w-component)
+            cubeXform[7] = 0.0f; // No change in Y for the homogeneous part
+            cubeXform[11] = 0.0f; // No change in Z for the homogeneous part
+            cubeXform[15] = dot - lightPos[3] * planeCoeff[3]; // Typically for perspective divide
         }
+
+        const int x = 0;
+        const int y = 1;
+        const int z = 2;
 
         private void calcNormal(float[,] v, float[] outp)
         {
@@ -902,19 +933,19 @@ namespace OpenGL
             float[] v2 = new float[3];
 
             // Calculate two vectors from the three points
-            v1[x] = v[0, x] - v[1, x];
-            v1[y] = v[0, y] - v[1, y];
-            v1[z] = v[0, z] - v[1, z];
+            v1[0] = v[0, 0] - v[1, 0]; // X1 - X2
+            v1[2] = v[0, 2] - v[1, 2]; // Z1 - Z2 (use v[0, 2] for Y)
+            v1[1] = v[0, 1] - v[1, 1]; // Y1 - Y2 (use v[0, 1] for Z)
 
-            v2[x] = v[1, x] - v[2, x];
-            v2[y] = v[1, y] - v[2, y];
-            v2[z] = v[1, z] - v[2, z];
+            v2[0] = v[1, 0] - v[2, 0]; // X2 - X3
+            v2[2] = v[1, 2] - v[2, 2]; // Z2 - Z3 (use v[1, 2] for Y)
+            v2[1] = v[1, 1] - v[2, 1]; // Y2 - Y3 (use v[1, 1] for Z)
 
             // Take the cross product of the two vectors to get
-            // the normal vector which will be stored in out
-            outp[x] = v1[y] * v2[z] - v1[z] * v2[y];
-            outp[y] = v1[z] * v2[x] - v1[x] * v2[z];
-            outp[z] = v1[x] * v2[y] - v1[y] * v2[x];
+            // the normal vector which will be stored in outp
+            outp[0] = v1[2] * v2[1] - v1[1] * v2[2]; // X-component
+            outp[1] = v1[0] * v2[2] - v1[2] * v2[0]; // Y-component
+            outp[2] = v1[1] * v2[0] - v1[0] * v2[1]; // Z-component
 
             // Normalize the vector (shorten length to one)
             ReduceToUnit(outp);
@@ -926,20 +957,37 @@ namespace OpenGL
 
             // Calculate the length of the vector		
             length = (float)Math.Sqrt((vector[0] * vector[0]) +
-                                (vector[1] * vector[1]) +
-                                (vector[2] * vector[2]));
+                                       (vector[1] * vector[1]) +
+                                       (vector[2] * vector[2]));
 
-            // Keep the program from blowing up by providing an exceptable
-            // value for vectors that may calculated too close to zero.
+            // Prevent division by zero for vectors too close to zero.
             if (length == 0.0f)
                 length = 1.0f;
 
-            // Dividing each element by the length will result in a
-            // unit normal vector.
-            vector[0] /= length;
-            vector[1] /= length;
-            vector[2] /= length;
-        }*/
+            // Normalize the vector
+            vector[0] /= length; // X-component
+            vector[1] /= length; // Y-component
+            vector[2] /= length; // Z-component
+        }
+
+        private void DrawObjects(bool isForShades, int c)
+        {
+            if (isForShades)
+            {
+                if (c == 1)
+                    GL.glColor3d(0.5, 0.5, 0.5);
+                else
+                    GL.glColor3d(0.8, 0.8, 0.8);
+            }
+            else
+            {
+                GL.glColor3d(0.3f, 0.6f, 0.9f);
+            }
+
+            drawBed();
+            drawCloset();
+            drawWindow();
+        }
     }
 
 }

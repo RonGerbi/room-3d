@@ -69,7 +69,7 @@ namespace myOpenGL
         {
             NumericUpDown nUD = (NumericUpDown)sender;
             int i = int.Parse(nUD.Name.Substring(nUD.Name.Length - 1));
-            int pos = (int)nUD.Value; 
+            int pos = (int)nUD.Value;
             switch(i)
             {
                 case 1:

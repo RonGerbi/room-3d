@@ -9,6 +9,10 @@
     {
       "AbsoluteMoniker": "D:0:0:{D118B639-8BF0-4AB3-B64D-254EE7731890}|myOpenGL\\myOpenGL.csproj|C:\\Users\\\u05E8\u05D5\u05DF\\RoomOpenGL\\myopengl\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
       "RelativeMoniker": "D:0:0:{D118B639-8BF0-4AB3-B64D-254EE7731890}|myOpenGL\\myOpenGL.csproj|solutionrelative:myopengl\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D118B639-8BF0-4AB3-B64D-254EE7731890}|myOpenGL\\myOpenGL.csproj|c:\\users\\\u05E8\u05D5\u05DF\\roomopengl\\myopengl\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{D118B639-8BF0-4AB3-B64D-254EE7731890}|myOpenGL\\myOpenGL.csproj|solutionrelative:myopengl\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -18,7 +22,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 4,
+          "SelectedChildIndex": 5,
           "Children": [
             {
               "$type": "Bookmark",
@@ -34,6 +38,19 @@
             },
             {
               "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Form1.cs",
+              "DocumentMoniker": "C:\\Users\\\u05E8\u05D5\u05DF\\RoomOpenGL\\myOpenGL\\Form1.cs",
+              "RelativeDocumentMoniker": "myOpenGL\\Form1.cs",
+              "ToolTip": "C:\\Users\\\u05E8\u05D5\u05DF\\RoomOpenGL\\myOpenGL\\Form1.cs",
+              "RelativeToolTip": "myOpenGL\\Form1.cs",
+              "ViewState": "AQIAAGsAAAAAAAAAAAAAwEgAAAAVAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-10-20T15:43:29.454Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
               "DocumentIndex": 1,
               "Title": "Form1.cs [Design]",
               "DocumentMoniker": "C:\\Users\\\u05E8\u05D5\u05DF\\RoomOpenGL\\myOpenGL\\Form1.cs",
@@ -41,7 +58,8 @@
               "ToolTip": "C:\\Users\\\u05E8\u05D5\u05DF\\RoomOpenGL\\myOpenGL\\Form1.cs [Design]",
               "RelativeToolTip": "myOpenGL\\Form1.cs [Design]",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-09-02T16:21:53.882Z"
+              "WhenOpened": "2024-09-02T16:21:53.882Z",
+              "EditorCaption": " [Design]"
             },
             {
               "$type": "Document",
@@ -51,7 +69,7 @@
               "RelativeDocumentMoniker": "myOpenGL\\cOGL.cs",
               "ToolTip": "C:\\Users\\\u05E8\u05D5\u05DF\\RoomOpenGL\\myOpenGL\\cOGL.cs",
               "RelativeToolTip": "myOpenGL\\cOGL.cs",
-              "ViewState": "AQIAAIIDAAAAAAAAAAAQwJUDAAAAAAAA",
+              "ViewState": "AQIAAFgDAAAAAAAAAAAwwGgDAABIAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-08-26T16:42:05.847Z",
               "EditorCaption": ""

@@ -15,6 +15,8 @@ namespace OpenGL
         Control p;
         float[,] floor = new float[3, 3];
         float[] lightPos = new float[4];
+        public bool isCeilingLightBulbOn = true;
+        public bool applyShadows = true;
         int Width;
         int Height;
 
@@ -114,17 +116,27 @@ namespace OpenGL
             drawFloor(25f, 0f, 0f, 0f);
             drawLamp();
 
-            GL.glEnable(GL.GL_LIGHTING);
+            if (isCeilingLightBulbOn)
+            {
+                GL.glEnable(GL.GL_LIGHTING);
+            }
+            else
+            {
+                GL.glDisable(GL.GL_LIGHTING);
+            }
 
             DrawObjects(false, 1);
 
-            GL.glDisable(GL.GL_LIGHTING);
-            // Draw shadow
-            GL.glPushMatrix(); // Save matrix for shadow drawing
-            MakeShadowMatrix(floor);
-            GL.glMultMatrixf(cubeXform);
-            DrawObjects(true, 1);
-            GL.glPopMatrix(); // Restore matrix after drawing shadow
+            if (applyShadows)
+            {
+                GL.glDisable(GL.GL_LIGHTING);
+                // Draw shadow
+                GL.glPushMatrix(); // Save matrix for shadow drawing
+                MakeShadowMatrix(floor);
+                GL.glMultMatrixf(cubeXform);
+                DrawObjects(true, 1);
+                GL.glPopMatrix(); // Restore matrix after drawing shadow
+            }
 
             GL.glPopMatrix(); // Restore the initial transformation matrix
         }

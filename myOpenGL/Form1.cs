@@ -30,8 +30,28 @@ namespace myOpenGL
             hScrollBarScroll(hScrollBar7, null);
             hScrollBarScroll(hScrollBar8, null);
             hScrollBarScroll(hScrollBar9, null);
+
+            this.KeyPreview = true;
+
+            this.KeyPress += new KeyPressEventHandler(Form1_KeyPress);
         }
 
+        private void Form1_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            e.Handled = true;
+
+            switch (char.ToUpper(e.KeyChar))
+            {
+                case 'P':
+                    cGL.isCeilingLightBulbOn = !cGL.isCeilingLightBulbOn;
+                    break;
+                case 'L':
+                    cGL.applyShadows = !cGL.applyShadows;
+                    break;
+            }
+
+            cGL.Draw();
+        }
 
         private void panel1_Paint(object sender, PaintEventArgs e)
         {

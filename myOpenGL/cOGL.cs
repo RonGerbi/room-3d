@@ -5,6 +5,7 @@ using System.Windows.Forms;
 //2
 using System.Drawing;
 using System.Security.AccessControl;
+using System.Runtime.InteropServices.ComTypes;
 
 namespace OpenGL
 {
@@ -15,6 +16,8 @@ namespace OpenGL
         Control p;
         float[,] floor = new float[3, 3];
         float[] lightPos = new float[4];
+        public float doorAngle = 0.0f;
+        public bool isDoorOpen = false;
         public bool isCeilingLightBulbOn = true;
         public bool applyShadows = true;
         int Width;
@@ -114,6 +117,7 @@ namespace OpenGL
             GL.glPushMatrix(); // Save the current transformation matrix
             GL.glTranslatef(-12.5f, 0.0f, 0.0f);
             drawFloor(25f, 0f, 0f, 0f);
+            drawClothes();
             drawLamp();
 
             if (isCeilingLightBulbOn)
@@ -357,37 +361,42 @@ namespace OpenGL
             GL.glGetDoublev(GL.GL_MODELVIEW_MATRIX, AccumulatedRotationsTraslations);
 
             // Initialize texture
-            InitTexture("wood.bmp");
+            InitTextures();
         }
 
-        private void InitTexture(string imageBMPfile)
+        private void InitTextures()
         {
             GL.glEnable(GL.GL_TEXTURE_2D);
 
-            texture = new uint[2];		// storage for texture
+            string[] imageFiles = { "wood.bmp", "soccer_ball.bmp", "bed_body.bmp", "blanket.bmp", "Pillow.bmp",
+          "door.bmp", "closet.bmp", "drawers.bmp", "doors_right.bmp", "mirror.bmp", "dressingTable.bmp",
+          "LED.bmp", "clothes.bmp", "jeans.bmp" };
 
-            Bitmap image = new Bitmap(imageBMPfile);
-            image.RotateFlip(RotateFlipType.RotateNoneFlipY); //Y axis in Windows is directed downwards, while in OpenGL-upwards
-            System.Drawing.Imaging.BitmapData bitmapdata;
-            Rectangle rect = new Rectangle(0, 0, image.Width, image.Height);
+            int numTextures = imageFiles.Length;
+            texture = new uint[numTextures];  // יצירת מערך עבור הטקסטורות
 
-            bitmapdata = image.LockBits(rect, System.Drawing.Imaging.ImageLockMode.ReadOnly,
-                System.Drawing.Imaging.PixelFormat.Format24bppRgb);
+            GL.glGenTextures(numTextures, texture);
 
-            GL.glGenTextures(1, texture);
-            GL.glBindTexture(GL.GL_TEXTURE_2D, texture[0]);
-            //  VN-in order to use System.Drawing.Imaging.BitmapData Scan0 I've added overloaded version to
-            //  OpenGL.cs
-            //  [DllImport(GL_DLL, EntryPoint = "glTexImage2D")]
-            //  public static extern void glTexImage2D(uint target, int level, int internalformat, int width, int height, int border, uint format, uint type, IntPtr pixels);
-            GL.glTexImage2D(GL.GL_TEXTURE_2D, 0, (int)GL.GL_RGB8, image.Width, image.Height,
-                0, GL.GL_BGR_EXT, GL.GL_UNSIGNED_byte, bitmapdata.Scan0);
+            for (int i = 0; i < numTextures; i++)
+            {
+                Bitmap image = new Bitmap(imageFiles[i]);
+                image.RotateFlip(RotateFlipType.RotateNoneFlipY); // Y axis in Windows is directed downwards, while in OpenGL-upwards
+                System.Drawing.Imaging.BitmapData bitmapdata;
+                Rectangle rect = new Rectangle(0, 0, image.Width, image.Height);
 
-            GL.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, (int)GL.GL_LINEAR);		// Linear Filtering
-            GL.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, (int)GL.GL_LINEAR);		// Linear Filtering
+                bitmapdata = image.LockBits(rect, System.Drawing.Imaging.ImageLockMode.ReadOnly,
+                    System.Drawing.Imaging.PixelFormat.Format24bppRgb);
 
-            image.UnlockBits(bitmapdata);
-            image.Dispose();
+                GL.glBindTexture(GL.GL_TEXTURE_2D, texture[i]);
+                GL.glTexImage2D(GL.GL_TEXTURE_2D, 0, (int)GL.GL_RGB8, image.Width, image.Height,
+                    0, GL.GL_BGR_EXT, GL.GL_UNSIGNED_byte, bitmapdata.Scan0);
+
+                GL.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, (int)GL.GL_LINEAR);  // Linear Filtering
+                GL.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, (int)GL.GL_LINEAR);  // Linear Filtering
+
+                image.UnlockBits(bitmapdata);
+                image.Dispose();
+            }
         }
 
         private void drawFloor(float i_Length, float i_RootX, float i_RootY, float i_RootZ)
@@ -625,10 +634,21 @@ namespace OpenGL
             GL.glEnd();
         }
 
-        private void drawBed()
+        private void drawBed(bool i_DrawWithTexturesAndColors)
         {
+            if (i_DrawWithTexturesAndColors)
+            {
+                GL.glColor3f(1.0f, 1.0f, 1.0f);
+            }
+
             // Rotate X + Translate X = BUG.
             //bed head
+            if (i_DrawWithTexturesAndColors)
+            {
+                GL.glEnable(GL.GL_TEXTURE_2D);
+                GL.glBindTexture(GL.GL_TEXTURE_2D, texture[2]);
+            }
+
             GL.glPushMatrix();
             GL.glTranslatef(5.0f, 2.15f, 0.5f);
             GL.glPushMatrix(); // Save the mat state
@@ -637,14 +657,37 @@ namespace OpenGL
             drawCube();
             GL.glPopMatrix();
 
+            if (i_DrawWithTexturesAndColors) 
+            {
+                GL.glDisable(GL.GL_TEXTURE_2D);
+            }
+
             //bed body
+            if (i_DrawWithTexturesAndColors)
+            {
+                GL.glEnable(GL.GL_TEXTURE_2D);
+                GL.glBindTexture(GL.GL_TEXTURE_2D, texture[2]);
+            }
+            
+            GL.glEnable(GL.GL_TEXTURE_2D);
+            GL.glBindTexture(GL.GL_TEXTURE_2D, texture[2]);
             GL.glPushMatrix();
             GL.glTranslatef(0f, -1.1f, 6.2f);
             GL.glScalef(0.4f, 0.1f, 0.5f); //1, 0.2, 0.9
             drawCube();
             GL.glPopMatrix();
 
+            if (i_DrawWithTexturesAndColors)
+            {
+                GL.glDisable(GL.GL_TEXTURE_2D);
+            }
+
             //pillow right far
+            if (i_DrawWithTexturesAndColors)
+            {
+                GL.glColor3f(0.627f, 0.322f, 0.176f);
+            }
+
             GL.glPushMatrix();
             GL.glTranslatef(-2.8f, 0.68f, 3.8f);
             GL.glRotatef(40f, 0f, 0f, 1f);
@@ -653,6 +696,11 @@ namespace OpenGL
             GL.glPopMatrix();
 
             //pillow left near
+            if (i_DrawWithTexturesAndColors)
+            {
+                GL.glColor3f(0.627f, 0.322f, 0.176f);
+            }
+
             GL.glPushMatrix();
             GL.glTranslatef(-2.8f, 0.68f, 8.8f);
             GL.glRotatef(40f, 0f, 0f, 1f);
@@ -661,6 +709,13 @@ namespace OpenGL
             GL.glPopMatrix();
 
             //blanket
+            if (i_DrawWithTexturesAndColors)
+            {
+                GL.glColor3f(0.627f, 0.322f, 0.176f);
+                GL.glEnable(GL.GL_TEXTURE_2D);
+                GL.glBindTexture(GL.GL_TEXTURE_2D, texture[2]);
+            }
+
             GL.glPushMatrix();
             GL.glTranslatef(1.51f, -0.15f, 6.15f);
             //glRotatef(22, 0,0,1);
@@ -668,6 +723,11 @@ namespace OpenGL
             drawCube();
             GL.glPopMatrix();
             GL.glPopMatrix();
+
+            if (i_DrawWithTexturesAndColors)
+            {
+                GL.glDisable(GL.GL_TEXTURE_2D);
+            }
         }
 
         private void drawCloset()
@@ -982,6 +1042,479 @@ namespace OpenGL
             vector[2] /= length; // Z-component
         }
 
+        private void drawSphere(bool i_DrawWithTexturesAndColors)
+        {
+            GLUquadric obj;
+            obj = GLU.gluNewQuadric();
+
+            if (i_DrawWithTexturesAndColors)
+            {
+                GL.glEnable(GL.GL_TEXTURE_2D);
+                GL.glBindTexture(GL.GL_TEXTURE_2D, texture[1]);
+                GL.glColor3f(1.0f, 1.0f, 1.0f);
+            }
+
+            GL.glDisable(GL.GL_LIGHTING);
+            GLU.gluQuadricTexture(obj, (byte)GL.GL_TRUE);
+            GL.glPushMatrix();
+            GL.glTranslatef(1.5f, 0.60f, 15f);
+            GL.glRotatef(120.0f, 0.0f, 1.0f, 0.0f);
+            GLU.gluSphere(obj, 0.6, 80, 80);
+            GL.glPopMatrix();
+
+            if (i_DrawWithTexturesAndColors)
+            {
+                GL.glDisable(GL.GL_TEXTURE_2D);
+            }
+
+            GLU.gluDeleteQuadric(obj);
+        }
+
+        private void drawCloset(bool i_DrawWithTexturesAndColors)
+        {
+            drawClothes();
+
+            GL.glPushMatrix();
+            GL.glTranslatef(15.0f, 0.5f, 0.0f);
+            GL.glScalef(1.5f, 1.5f, 1.2f);
+
+            float shelfHeightDelta = 0.0f;
+
+            if (i_DrawWithTexturesAndColors)
+            {
+                GL.glColor3f(0.8f, 0.8f, 0.8f);
+            }
+
+            for (int i = 0; i < 5; i++)
+            {
+                //wall shelf
+
+                GL.glPushMatrix();
+                GL.glTranslatef(1.5f, shelfHeightDelta, 3.0f);
+                GL.glScalef(0.4f, 0.03f, 0.2f);
+                drawCube();
+                GL.glPopMatrix();
+
+                shelfHeightDelta += 2.5f;
+            }
+
+            float drawerXDelta = -2.43f;
+
+            for (int i = 0; i < 4; i++)
+            {
+                // drawer
+                GL.glPushMatrix();
+                GL.glTranslatef(drawerXDelta, 1.0f, 3.0f);
+
+                // left side         
+                GL.glPushMatrix();
+                GL.glTranslatef(0.0f, 0.25f, 0.0f);
+                GL.glScalef(0.005f, 0.095f, 0.2f);
+                drawCube();
+                GL.glPopMatrix();
+
+                // right side
+                GL.glPushMatrix();
+                GL.glTranslatef(1.9f, 0.25f, 0.0f);
+                GL.glScalef(0.005f, 0.095f, 0.2f);
+                drawCube();
+                GL.glPopMatrix();
+
+                // down side              
+                GL.glPushMatrix();
+                GL.glTranslatef(0.95f, -0.63f, 0.0f);
+                GL.glScalef(0.088f, 0.005f, 0.2f);
+                drawCube();
+                GL.glPopMatrix();
+
+                // front side
+
+                if (i_DrawWithTexturesAndColors)
+                {
+                    GL.glEnable(GL.GL_TEXTURE_2D);
+                    GL.glBindTexture(GL.GL_TEXTURE_2D, texture[7]);
+                }
+
+                GL.glPushMatrix();
+                GL.glTranslatef(0.95f, 0.2f, 2.02f);
+                GL.glScalef(0.1f, 0.15f, 0.001f);
+                drawCube();
+                GL.glPopMatrix();
+
+                if (i_DrawWithTexturesAndColors)
+                {
+                    GL.glDisable(GL.GL_TEXTURE_2D);
+                }
+
+                GL.glPopMatrix();
+
+                drawerXDelta += 1.99f;
+            }
+
+            GL.glPushMatrix();
+            GL.glTranslatef(-0.5f, 0f, 2.02f);
+
+            // left door
+            drawDynamicLeftDoor(isDoorOpen, i_DrawWithTexturesAndColors);
+
+            // right door
+            if (i_DrawWithTexturesAndColors)
+            {
+                GL.glEnable(GL.GL_TEXTURE_2D);
+                GL.glBindTexture(GL.GL_TEXTURE_2D, texture[5]);
+            }
+            
+            GL.glPushMatrix();
+            GL.glTranslatef(2.95f, 6.51f, 3.0f);
+            GL.glScalef(0.105f, 0.376f, 0.005f);
+            drawCube();
+            GL.glPopMatrix();
+
+            if (i_DrawWithTexturesAndColors)
+            {
+                GL.glDisable(GL.GL_TEXTURE_2D);
+            }
+
+            GL.glTranslatef(2f, 0.0f, 0.0f);
+
+            // left door
+            if (i_DrawWithTexturesAndColors)
+            {
+                GL.glEnable(GL.GL_TEXTURE_2D);
+                GL.glBindTexture(GL.GL_TEXTURE_2D, texture[8]);
+            }
+
+            GL.glPushMatrix();
+            GL.glTranslatef(-0.96f, 6.51f, 3.0f);
+            GL.glScalef(0.105f, 0.376f, 0.005f);
+            drawCube();
+            GL.glPopMatrix();
+
+            if (i_DrawWithTexturesAndColors)
+            {
+                GL.glDisable(GL.GL_TEXTURE_2D);
+            }
+
+            // right door
+            if (i_DrawWithTexturesAndColors)
+            {
+                GL.glEnable(GL.GL_TEXTURE_2D);
+                GL.glBindTexture(GL.GL_TEXTURE_2D, texture[8]);
+            }
+
+            GL.glPushMatrix();
+            GL.glTranslatef(2.95f, 6.51f, 3.0f);
+            GL.glScalef(0.105f, 0.376f, 0.005f);
+            drawCube();
+            GL.glPopMatrix();
+
+            if (i_DrawWithTexturesAndColors)
+            {
+                GL.glDisable(GL.GL_TEXTURE_2D);
+            }
+
+            GL.glPopMatrix();
+
+            if (i_DrawWithTexturesAndColors)
+            {
+                GL.glColor3f(0.8f, 0.8f, 0.8f);
+            }
+
+            // left side
+            GL.glPushMatrix();
+            GL.glTranslatef(-2.5f, 5.0f, 3f);
+            GL.glScalef(0.001f, 0.53f, 0.2f);
+            drawCube();
+            GL.glPopMatrix();
+
+            // right side
+            GL.glPushMatrix();
+            GL.glTranslatef(5.5f, 5.0f, 3f);
+            GL.glScalef(0.001f, 0.53f, 0.2f);
+            drawCube();
+            GL.glPopMatrix();
+
+            //back side
+            GL.glPushMatrix();
+            GL.glRotatef(90.0f, 0.0f, 1.0f, 0.0f);
+            GL.glTranslatef(-1.0f, 5.0f, 1.5f);
+            GL.glScalef(0.001f, 0.53f, 0.4f);
+            drawCube();
+            GL.glPopMatrix();
+
+
+            GL.glPopMatrix();
+        }
+
+        private void drawMirror(bool i_DrawWithTexturesAndColors)
+        {
+            GL.glEnable(GL.GL_STENCIL_TEST);
+            GL.glClear(GL.GL_STENCIL_BUFFER_BIT);
+
+            // Draw the mirror
+            GL.glStencilFunc(GL.GL_ALWAYS, 1, 1);
+            GL.glStencilOp(GL.GL_KEEP, GL.GL_KEEP, GL.GL_REPLACE);
+
+            GL.glPushMatrix();
+
+            if (i_DrawWithTexturesAndColors)
+            {
+                GL.glEnable(GL.GL_TEXTURE_2D);
+                GL.glBindTexture(GL.GL_TEXTURE_2D, texture[9]);
+            }
+
+            GL.glTranslatef(23.47f, 6.2f, 21.7f);
+            GL.glRotatef(90.0f, 0.0f, 0.0f, 1.0f);
+            GL.glScalef(0.28f, 0.001f, 0.20f);
+            drawCube();
+
+            if (i_DrawWithTexturesAndColors)
+            {
+                GL.glDisable(GL.GL_TEXTURE_2D);
+            }
+            
+            GL.glPopMatrix();
+
+            // Configure stencil buffer for reflection
+            GL.glStencilFunc(GL.GL_EQUAL, 1, 1);
+            GL.glStencilOp(GL.GL_KEEP, GL.GL_KEEP, GL.GL_KEEP);
+
+            // Draw the reflected object
+            GL.glPushMatrix();
+            GL.glScalef(1.0f, -1.0f, 1.0f); // Flip the object for reflection
+            GL.glTranslatef(0.0f, -12.4f, 0.0f); // Adjust position for reflection
+            drawCube(); // Example of reflected cube, color red
+            GL.glPopMatrix();
+
+            GL.glDisable(GL.GL_STENCIL_TEST);
+        }
+
+        private void drawDressingTable(bool i_DrawWithTexturesAndColors)
+        {
+            // mirror
+            drawMirror(i_DrawWithTexturesAndColors);
+
+            if (i_DrawWithTexturesAndColors)
+            {
+                GL.glColor3f(0.85f, 0.8f, 0.7f);
+
+                GL.glEnable(GL.GL_TEXTURE_2D);
+                GL.glBindTexture(GL.GL_TEXTURE_2D, texture[10]);
+            }
+
+            // table left leg
+            GL.glPushMatrix();
+            GL.glTranslatef(23.0f, 1.8f, 19.89f);
+            GL.glScalef(0.05f, 0.17f, 0.03f);
+            drawCube();
+            GL.glPopMatrix();
+
+            // table right leg
+            GL.glPushMatrix();
+            GL.glTranslatef(23.0f, 1.8f, 23.5f);
+            GL.glScalef(0.05f, 0.17f, 0.03f);
+            drawCube();
+            GL.glPopMatrix();
+
+            // table plate
+            GL.glPushMatrix();
+            GL.glTranslatef(23.0f, 3.5f, 21.7f);
+            GL.glScalef(0.05f, 0.016f, 0.21f);
+            drawCube();
+            GL.glPopMatrix();
+
+            // table upper panel
+            GL.glPushMatrix();
+            GL.glTranslatef(22.989f, 8.94f, 21.7f);
+            GL.glScalef(0.05f, 0.01f, 0.21f);
+            drawCube();
+            GL.glPopMatrix();
+
+            // table left panel
+            GL.glPushMatrix();
+            GL.glTranslatef(23.5f, 6.0f, 19.74f);
+            GL.glRotatef(90.0f, 1.0f, 0.0f, 0.0f);
+            GL.glScalef(0.001f, 0.008f, 0.29f);
+            drawCube();
+            GL.glPopMatrix();
+
+            // table right panel
+            GL.glPushMatrix();
+            GL.glTranslatef(23.48f, 6.0f, 23.78f);
+            GL.glRotatef(90.0f, 1.0f, 0.0f, 0.0f);
+            GL.glScalef(0.001f, 0.008f, 0.29f);
+            drawCube();
+            GL.glPopMatrix();
+
+            if (i_DrawWithTexturesAndColors)
+            {
+                GL.glDisable(GL.GL_TEXTURE_2D);
+            }
+
+            // LED lamp
+            if (i_DrawWithTexturesAndColors)
+            {
+                GL.glDisable(GL.GL_TEXTURE_2D);
+
+                
+                GL.glEnable(GL.GL_TEXTURE_2D);
+                GL.glBindTexture(GL.GL_TEXTURE_2D, texture[11]);
+            }
+
+            if (i_DrawWithTexturesAndColors)
+            {
+                GL.glColor3f(1.0f, 1.0f, 1.0f);
+            }
+                
+            GL.glPushMatrix();
+            GL.glTranslatef(22.989f, 8.73f, 21.7f);
+            GL.glScalef(0.02f, 0.01f, 0.15f);
+            drawCube();
+            GL.glPopMatrix();
+
+            if (i_DrawWithTexturesAndColors)
+            {
+                GL.glDisable(GL.GL_TEXTURE_2D);
+            }
+        }
+
+        private void drawFloorLamp(bool i_DrawWithTexturesAndColors)
+        {
+            // base of the lamp
+            GL.glPushMatrix();
+            GLUquadric obj = GLU.gluNewQuadric();
+            if (i_DrawWithTexturesAndColors)
+            {
+                GL.glColor3f(0.78f, 0.78f, 0.78f);
+            }
+
+            GL.glTranslatef(22.8f, 0.5f, 16.0f);
+            GL.glRotatef(90.0f, 1.0f, 0.0f, 0.0f);
+            GLU.gluDisk(obj, 0.0, 1.0, 50, 50);
+            GLU.gluCylinder(obj, 1.0, 1.0, 0.3, 50, 50);
+            GL.glPopMatrix();
+            GLU.gluDeleteQuadric(obj);
+
+            // column of the lamp
+            GLUquadric obj1 = GLU.gluNewQuadric();
+
+            if (i_DrawWithTexturesAndColors)
+            {
+                GL.glColor3f(0.78f, 0.78f, 0.78f);
+            }
+
+            GL.glTranslatef(22.8f, 8.1f, 16.0f);
+            GL.glRotatef(90.0f, 1.0f, 0.0f, 0.0f);
+            GLU.gluCylinder(obj1, 0.05, 0.05, 7.7, 20, 20);
+            GL.glPushMatrix();
+            GLU.gluDisk(obj1, 0.5, 0.5, 200, 200);
+            GL.glPopMatrix();
+            GLU.gluDeleteQuadric(obj1);
+
+            // lamp shade
+            GL.glPushMatrix();
+            GLUquadric obj2 = GLU.gluNewQuadric();
+
+            if (i_DrawWithTexturesAndColors)
+            {
+                GL.glColor3f(1.0f, 0.8f, 0.6f);
+            }
+
+            GL.glTranslatef(0.0f, -0.01f, -1.0f); //( left/right x, back/front z ,height y)
+            GLU.gluCylinder(obj2, 1.0f, 0.0f, 1.0f, 30, 30);
+            GL.glPopMatrix();
+            GLU.gluDeleteQuadric(obj2);
+
+            // light bulb
+            GLUquadric obj3 = GLU.gluNewQuadric();
+            GL.glPushMatrix();
+            GL.glTranslatef(0.0f, -0.01f, -1.0f);
+            //GL.glTranslatef(-0.0f, 6.5f, 1.7f);
+
+            if (i_DrawWithTexturesAndColors)
+            {
+                GL.glColor3f(1.0f, 1.0f, 0.8f);
+            }
+
+            GLU.gluSphere(obj3, 0.1, 20, 20);
+            GLU.gluDeleteQuadric(obj3);
+            GL.glPopMatrix();
+        }
+
+        private void drawDynamicLeftDoor(bool isDoorOpen, bool i_DrawWithTexturesAndColors)
+        {
+            if (!isDoorOpen)
+            {
+                doorAngle = doorAngle >= 0.0f ? doorAngle - 2.0f : doorAngle;
+
+                if (i_DrawWithTexturesAndColors)
+                {
+                    GL.glEnable(GL.GL_TEXTURE_2D);
+                    GL.glBindTexture(GL.GL_TEXTURE_2D, texture[5]);
+                }
+
+                GL.glPushMatrix();
+                GL.glTranslatef(-0.96f, 6.51f, 3.0f);
+                GL.glRotatef(-doorAngle, 0.0f, 1.0f, 0.0f);
+                GL.glScalef(0.105f, 0.376f, 0.005f);
+                drawCube();
+                GL.glPopMatrix();
+
+                if (i_DrawWithTexturesAndColors)
+                {
+                    GL.glDisable(GL.GL_TEXTURE_2D);
+                }
+            }
+
+            else
+            {
+                doorAngle = doorAngle <= 90f ? doorAngle + 2.0f : doorAngle;
+
+                if (i_DrawWithTexturesAndColors)
+                {
+                    GL.glEnable(GL.GL_TEXTURE_2D);
+                    GL.glBindTexture(GL.GL_TEXTURE_2D, texture[5]);
+                }
+
+                GL.glPushMatrix();
+                GL.glTranslatef(-0.96f, 6.51f, 3.0f);
+                GL.glRotatef(doorAngle, 0.0f, 1.0f, 0.0f);
+                GL.glScalef(0.105f, 0.376f, 0.005f);
+                drawCube();
+                GL.glPopMatrix();
+
+                if (i_DrawWithTexturesAndColors)
+                {
+                    GL.glDisable(GL.GL_TEXTURE_2D);
+                }
+            }
+        }
+
+        private void drawClothes()
+        {
+            float height = 6.20f;
+            uint texture_num = 12;
+            GL.glColor3f(1.0f, 1.0f, 1.0f);
+
+            for (int i = 0; i < 3; i++)
+            {
+                GL.glEnable(GL.GL_TEXTURE_2D);
+                GL.glBindTexture(GL.GL_TEXTURE_2D, texture[texture_num]);
+                GL.glPushMatrix();
+                GL.glTranslatef(12.5f, height, 5.0f);
+                GL.glRotatef(90.0f, 1.0f, 0.0f, 0.0f);
+                GL.glScalef(0.10f, 0.01f, 0.12f);
+                drawCube();
+                GL.glPopMatrix();
+                GL.glDisable(GL.GL_TEXTURE_2D);
+
+                height += 3.5f;
+
+                if (i == 1)
+                    texture_num++;
+            }
+        }
+
         private void DrawObjects(bool isForShades, int c)
         {
             if (isForShades)
@@ -996,8 +1529,12 @@ namespace OpenGL
                 GL.glColor3d(0.3f, 0.6f, 0.9f);
             }
 
-            drawBed();
-            drawCloset();
+            drawBed(!isForShades);
+            drawCloset(!isForShades);
+            drawFloorLamp(!isForShades);
+            drawDressingTable(!isForShades);
+            drawMirror(!isForShades);
+            drawDynamicLeftDoor(isDoorOpen, !isForShades);
             drawWindow();
         }
     }

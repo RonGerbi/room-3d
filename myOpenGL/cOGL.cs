@@ -6,6 +6,7 @@ using System.Windows.Forms;
 using System.Drawing;
 using System.Security.AccessControl;
 using System.Runtime.InteropServices.ComTypes;
+using System.Runtime.CompilerServices;
 
 namespace OpenGL
 {
@@ -138,7 +139,7 @@ namespace OpenGL
                 GL.glPushMatrix(); // Save matrix for shadow drawing
                 MakeShadowMatrix(floor);
                 GL.glMultMatrixf(cubeXform);
-                DrawObjects(true, 1);
+                //DrawObjects(true, 1);
                 GL.glPopMatrix(); // Restore matrix after drawing shadow
             }
 
@@ -591,16 +592,18 @@ namespace OpenGL
             GL.glVertex3f(10.0f, 10.0f, -10.0f);
             GL.glTexCoord2f(0.0f, 1.0f);
             GL.glVertex3f(-10.0f, 10.0f, -10.0f);
+
             //top
             GL.glNormal3f(0.0f, 1.0f, 0.0f);
             GL.glTexCoord2f(0.0f, 0.0f);
             GL.glVertex3f(10.0f, 10.0f, 10.0f);
             GL.glTexCoord2f(1.0f, 0.0f);
             GL.glVertex3f(10.0f, 10.0f, -10.0f);
-            GL.glTexCoord2f(1.0f, 0.0f);
+            GL.glTexCoord2f(1.0f, 1.0f);
             GL.glVertex3f(-10.0f, 10.0f, -10.0f);
             GL.glTexCoord2f(0.0f, 1.0f);
             GL.glVertex3f(-10.0f, 10.0f, 10.0f);
+
             //bottom
             GL.glNormal3f(0.0f, -1.0f, 0.0f);
             GL.glTexCoord2f(0.0f, 0.0f);
@@ -641,8 +644,8 @@ namespace OpenGL
                 GL.glColor3f(1.0f, 1.0f, 1.0f);
             }
 
-            // Rotate X + Translate X = BUG.
             //bed head
+
             if (i_DrawWithTexturesAndColors)
             {
                 GL.glEnable(GL.GL_TEXTURE_2D);
@@ -651,11 +654,8 @@ namespace OpenGL
 
             GL.glPushMatrix();
             GL.glTranslatef(5.0f, 2.15f, 0.5f);
-            GL.glPushMatrix(); // Save the mat state
-            GL.glTranslatef(-4f, -0.49f, 6.2f); // Change the position of the object by adding values ​​to the axes(x,y,z).
-            GL.glScalef(0.05f, 0.16f, 0.5f); // Change the object size. scale(2,2,2) make it bigger twice
-            drawCube();
-            GL.glPopMatrix();
+
+            drawScaledTranslatedCube(-4f, -0.49f, 6.2f, 0.05f, 0.16f, 0.5f);
 
             if (i_DrawWithTexturesAndColors) 
             {
@@ -669,11 +669,27 @@ namespace OpenGL
                 GL.glBindTexture(GL.GL_TEXTURE_2D, texture[2]);
             }
             
-            GL.glEnable(GL.GL_TEXTURE_2D);
-            GL.glBindTexture(GL.GL_TEXTURE_2D, texture[2]);
+            drawScaledTranslatedCube(0f, -1.1f, 6.2f, 0.4f, 0.1f, 0.5f);
+
+            if (i_DrawWithTexturesAndColors)
+            {
+                GL.glDisable(GL.GL_TEXTURE_2D);
+            }
+
+            drawPillow(-2.8f, 0.68f, 3.8f, 40f, i_DrawWithTexturesAndColors);
+            drawPillow(-2.8f, 0.68f, 8.8f, 40f, i_DrawWithTexturesAndColors);
+
+            //blanket
+            if (i_DrawWithTexturesAndColors)
+            {
+                GL.glColor3f(0.627f, 0.322f, 0.176f);
+                GL.glEnable(GL.GL_TEXTURE_2D);
+                GL.glBindTexture(GL.GL_TEXTURE_2D, texture[3]);
+            }
+
             GL.glPushMatrix();
-            GL.glTranslatef(0f, -1.1f, 6.2f);
-            GL.glScalef(0.4f, 0.1f, 0.5f); //1, 0.2, 0.9
+            GL.glTranslatef(1.51f, -0.15f, 6.15f);
+            GL.glScalef(0.25f, 0.025f, 0.51f);
             drawCube();
             GL.glPopMatrix();
 
@@ -681,47 +697,31 @@ namespace OpenGL
             {
                 GL.glDisable(GL.GL_TEXTURE_2D);
             }
+        }
 
-            //pillow right far
-            if (i_DrawWithTexturesAndColors)
-            {
-                GL.glColor3f(0.627f, 0.322f, 0.176f);
-            }
-
+        private void drawScaledTranslatedCube(float x, float y, float z, float scaleX, float scaleY, float scaleZ)
+        {
             GL.glPushMatrix();
-            GL.glTranslatef(-2.8f, 0.68f, 3.8f);
-            GL.glRotatef(40f, 0f, 0f, 1f);
-            GL.glScalef(0.025f, 0.08f, 0.2f);
+            GL.glTranslatef(x, y, z);
+            GL.glScalef(scaleX, scaleY, scaleZ);
             drawCube();
             GL.glPopMatrix();
+        }
 
-            //pillow left near
-            if (i_DrawWithTexturesAndColors)
-            {
-                GL.glColor3f(0.627f, 0.322f, 0.176f);
-            }
-
-            GL.glPushMatrix();
-            GL.glTranslatef(-2.8f, 0.68f, 8.8f);
-            GL.glRotatef(40f, 0f, 0f, 1f);
-            GL.glScalef(0.025f, 0.08f, 0.2f);
-            drawCube();
-            GL.glPopMatrix();
-
-            //blanket
+        private void drawPillow(float x, float y, float z, float rotationAngle, bool i_DrawWithTexturesAndColors)
+        {
             if (i_DrawWithTexturesAndColors)
             {
                 GL.glColor3f(0.627f, 0.322f, 0.176f);
                 GL.glEnable(GL.GL_TEXTURE_2D);
-                GL.glBindTexture(GL.GL_TEXTURE_2D, texture[2]);
+                GL.glBindTexture(GL.GL_TEXTURE_2D, texture[4]);
             }
 
             GL.glPushMatrix();
-            GL.glTranslatef(1.51f, -0.15f, 6.15f);
-            //glRotatef(22, 0,0,1);
-            GL.glScalef(0.25f, 0.025f, 0.51f);
+            GL.glTranslatef(x, y, z);
+            GL.glRotatef(rotationAngle, 0f, 0f, 1f);
+            GL.glScalef(0.025f, 0.08f, 0.2f);
             drawCube();
-            GL.glPopMatrix();
             GL.glPopMatrix();
 
             if (i_DrawWithTexturesAndColors)
@@ -846,6 +846,16 @@ namespace OpenGL
 
         private void drawWindow()
         {
+            float frameScaleX = 0.01f;
+            float frameScaleY = 0.3f;
+            float frameScaleZ = 0.01f;
+            float frameTranslationX = 5f;
+            float blindHeight = 0.6f;
+            float blindScaleX = 0.02f;
+            float blindScaleY = 0.24f;
+            float blindScaleZ = 0.01f;
+            int numberOfBlinds = 10;
+
             GL.glPushMatrix();
 
             GL.glRotatef(90f, 0.0f, 1f, 0.0f);
@@ -853,15 +863,14 @@ namespace OpenGL
 
             // left side
             GL.glPushMatrix();
-            GL.glScalef(0.01f, 0.3f, 0.01f);
-
+            GL.glScalef(frameScaleX, frameScaleY, frameScaleZ);
             drawCube();
             GL.glPopMatrix();
 
             // right side
             GL.glPushMatrix();
-            GL.glTranslatef(5f, 0f, 0f);
-            GL.glScalef(0.01f, 0.3f, 0.01f);
+            GL.glTranslatef(frameTranslationX, 00f, 0f);
+            GL.glScalef(frameScaleX, frameScaleY, frameScaleZ);
             drawCube();
             GL.glPopMatrix();
 
@@ -874,28 +883,24 @@ namespace OpenGL
             GL.glTranslatef(0f, 9.5f, -5f);
 
             GL.glPushMatrix();
-            GL.glScalef(0.02f, 0.27f, 0.01f);
-
+            GL.glScalef(blindScaleX, frameScaleY, frameScaleZ);
             drawCube();
             GL.glPopMatrix();
 
             // upper side
             GL.glPushMatrix();
             GL.glTranslatef(0f, 0f, -6f);
-            GL.glScalef(0.02f, 0.27f, 0.01f);
-
+            GL.glScalef(blindScaleX, frameScaleY, frameScaleZ);
             drawCube();
             GL.glPopMatrix();
 
-            float height = 0.6f;
             // Blinds
             for (int i = 0; i < 10; i++)
             {
-                GL.glTranslatef(0f, 0f, -height);
+                GL.glTranslatef(0f, 0f, -blindHeight);
 
                 GL.glPushMatrix();
-                GL.glScalef(0.02f, 0.24f, 0.01f);
-
+                GL.glScalef(blindScaleX, blindScaleY, blindScaleZ);
                 drawCube();
                 GL.glPopMatrix();
             }
@@ -1381,64 +1386,54 @@ namespace OpenGL
         private void drawFloorLamp(bool i_DrawWithTexturesAndColors)
         {
             // base of the lamp
-            GL.glPushMatrix();
+            
             GLUquadric obj = GLU.gluNewQuadric();
+
             if (i_DrawWithTexturesAndColors)
             {
                 GL.glColor3f(0.78f, 0.78f, 0.78f);
             }
 
+            GL.glPushMatrix();
             GL.glTranslatef(22.8f, 0.5f, 16.0f);
             GL.glRotatef(90.0f, 1.0f, 0.0f, 0.0f);
             GLU.gluDisk(obj, 0.0, 1.0, 50, 50);
             GLU.gluCylinder(obj, 1.0, 1.0, 0.3, 50, 50);
             GL.glPopMatrix();
-            GLU.gluDeleteQuadric(obj);
 
             // column of the lamp
-            GLUquadric obj1 = GLU.gluNewQuadric();
 
-            if (i_DrawWithTexturesAndColors)
-            {
-                GL.glColor3f(0.78f, 0.78f, 0.78f);
-            }
-
+            GL.glPushMatrix();
             GL.glTranslatef(22.8f, 8.1f, 16.0f);
             GL.glRotatef(90.0f, 1.0f, 0.0f, 0.0f);
-            GLU.gluCylinder(obj1, 0.05, 0.05, 7.7, 20, 20);
-            GL.glPushMatrix();
-            GLU.gluDisk(obj1, 0.5, 0.5, 200, 200);
+            GLU.gluDisk(obj, 0.5, 0.5, 200, 200);
+            GLU.gluCylinder(obj, 0.05, 0.05, 7.7, 20, 20);
             GL.glPopMatrix();
-            GLU.gluDeleteQuadric(obj1);
 
             // lamp shade
-            GL.glPushMatrix();
-            GLUquadric obj2 = GLU.gluNewQuadric();
-
             if (i_DrawWithTexturesAndColors)
             {
                 GL.glColor3f(1.0f, 0.8f, 0.6f);
             }
 
-            GL.glTranslatef(0.0f, -0.01f, -1.0f); //( left/right x, back/front z ,height y)
-            GLU.gluCylinder(obj2, 1.0f, 0.0f, 1.0f, 30, 30);
+            GL.glPushMatrix();
+            GL.glTranslatef(22.8f, 8.1f, 16.0f);
+            GLU.gluCylinder(obj, 1.0f, 0.0f, 1.0f, 30, 30);
             GL.glPopMatrix();
-            GLU.gluDeleteQuadric(obj2);
 
             // light bulb
-            GLUquadric obj3 = GLU.gluNewQuadric();
-            GL.glPushMatrix();
-            GL.glTranslatef(0.0f, -0.01f, -1.0f);
-            //GL.glTranslatef(-0.0f, 6.5f, 1.7f);
-
             if (i_DrawWithTexturesAndColors)
             {
                 GL.glColor3f(1.0f, 1.0f, 0.8f);
             }
 
-            GLU.gluSphere(obj3, 0.1, 20, 20);
-            GLU.gluDeleteQuadric(obj3);
+            GL.glPushMatrix();
+            GL.glTranslatef(22.8f, 8.1f, 15.0f);
+
+            GLU.gluSphere(obj, 0.1, 20, 20);
             GL.glPopMatrix();
+
+            GLU.gluDeleteQuadric(obj);
         }
 
         private void drawDynamicLeftDoor(bool isDoorOpen, bool i_DrawWithTexturesAndColors)
@@ -1534,7 +1529,6 @@ namespace OpenGL
             drawFloorLamp(!isForShades);
             drawDressingTable(!isForShades);
             drawMirror(!isForShades);
-            drawDynamicLeftDoor(isDoorOpen, !isForShades);
             drawWindow();
         }
     }

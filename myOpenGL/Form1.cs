@@ -48,22 +48,19 @@ namespace myOpenGL
                 case 'L':
                     cGL.applyShadows = !cGL.applyShadows;
                     break;
+                case 'O':
+                    cGL.isDoorOpen = !cGL.isDoorOpen;
+                    break;
             }
-
-            cGL.Draw();
         }
 
-        private void panel1_Paint(object sender, PaintEventArgs e)
-        {
-            cGL.Draw();
-            
-            //panel1.BorderStyle==None !! provides an exact half-height views
-                                    //!!!!!! 
-        }
 
         private void panel1_Resize(object sender, EventArgs e)
         {
-            cGL.OnResize();
+            if (cGL != null)
+            {
+                cGL.OnResize();
+            }
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -77,10 +74,6 @@ namespace myOpenGL
             HScrollBar hb = (HScrollBar)sender;
             int n = int.Parse(hb.Name.Substring(hb.Name.Length - 1));
             cGL.ScrollValue[n - 1] = (hb.Value - 100) / 10.0f;
-            if (e != null)
-            {
-                cGL.Draw();
-            }
         }
 
         public float[] oldPos = new float[7];
@@ -165,10 +158,14 @@ namespace myOpenGL
                     }
                     break;
             }
-            cGL.Draw();
+
             oldPos[i - 1] = pos;
 
         }
 
+        private void updateTimer_Tick(object sender, EventArgs e)
+        {
+            cGL.Draw();
+        }
     }
 }

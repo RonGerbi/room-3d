@@ -118,7 +118,6 @@ namespace OpenGL
             GL.glPushMatrix(); // Save the current transformation matrix
             GL.glTranslatef(-12.5f, 0.0f, 0.0f);
             drawFloor(25f, 0f, 0f, 0f);
-            drawClothes();
             drawLamp();
 
             if (isCeilingLightBulbOn)
@@ -139,7 +138,7 @@ namespace OpenGL
                 GL.glPushMatrix(); // Save matrix for shadow drawing
                 MakeShadowMatrix(floor);
                 GL.glMultMatrixf(cubeXform);
-                //DrawObjects(true, 1);
+                DrawObjects(true, 0);
                 GL.glPopMatrix(); // Restore matrix after drawing shadow
             }
 
@@ -212,6 +211,8 @@ namespace OpenGL
                         GL.glTranslatef(0, 0, delta / 20);
                         break;
                 }
+
+                intOptionC = 0;
             }
             //as result - the ModelView Matrix now is pure representation
             //of KeyCode transform and only it !!!
@@ -639,15 +640,10 @@ namespace OpenGL
 
         private void drawBed(bool i_DrawWithTexturesAndColors)
         {
+            //bed head
             if (i_DrawWithTexturesAndColors)
             {
                 GL.glColor3f(1.0f, 1.0f, 1.0f);
-            }
-
-            //bed head
-
-            if (i_DrawWithTexturesAndColors)
-            {
                 GL.glEnable(GL.GL_TEXTURE_2D);
                 GL.glBindTexture(GL.GL_TEXTURE_2D, texture[2]);
             }
@@ -693,6 +689,7 @@ namespace OpenGL
             drawCube();
             GL.glPopMatrix();
 
+            GL.glPopMatrix();
             if (i_DrawWithTexturesAndColors)
             {
                 GL.glDisable(GL.GL_TEXTURE_2D);
@@ -1077,7 +1074,10 @@ namespace OpenGL
 
         private void drawCloset(bool i_DrawWithTexturesAndColors)
         {
-            drawClothes();
+            if (i_DrawWithTexturesAndColors)
+            {
+                drawClothes();
+            }
 
             GL.glPushMatrix();
             GL.glTranslatef(15.0f, 0.5f, 0.0f);
@@ -1090,19 +1090,30 @@ namespace OpenGL
                 GL.glColor3f(0.8f, 0.8f, 0.8f);
             }
 
+            drawShelves(ref shelfHeightDelta);
+            drawDrawers(i_DrawWithTexturesAndColors);
+            drawDoors(i_DrawWithTexturesAndColors);
+            drawClosetSides(i_DrawWithTexturesAndColors);
+
+            GL.glPopMatrix();
+        }
+
+        private void drawShelves(ref float i_ShelfHeightDelta)
+        {
             for (int i = 0; i < 5; i++)
             {
-                //wall shelf
-
                 GL.glPushMatrix();
-                GL.glTranslatef(1.5f, shelfHeightDelta, 3.0f);
+                GL.glTranslatef(1.5f, i_ShelfHeightDelta, 3.0f);
                 GL.glScalef(0.4f, 0.03f, 0.2f);
                 drawCube();
                 GL.glPopMatrix();
 
-                shelfHeightDelta += 2.5f;
+                i_ShelfHeightDelta += 2.5f;
             }
+        }
 
+        private void drawDrawers(bool i_DrawWithTexturesAndColors)
+        {
             float drawerXDelta = -2.43f;
 
             for (int i = 0; i < 4; i++)
@@ -1111,51 +1122,45 @@ namespace OpenGL
                 GL.glPushMatrix();
                 GL.glTranslatef(drawerXDelta, 1.0f, 3.0f);
 
-                // left side         
-                GL.glPushMatrix();
-                GL.glTranslatef(0.0f, 0.25f, 0.0f);
-                GL.glScalef(0.005f, 0.095f, 0.2f);
-                drawCube();
-                GL.glPopMatrix();
-
-                // right side
-                GL.glPushMatrix();
-                GL.glTranslatef(1.9f, 0.25f, 0.0f);
-                GL.glScalef(0.005f, 0.095f, 0.2f);
-                drawCube();
-                GL.glPopMatrix();
-
-                // down side              
-                GL.glPushMatrix();
-                GL.glTranslatef(0.95f, -0.63f, 0.0f);
-                GL.glScalef(0.088f, 0.005f, 0.2f);
-                drawCube();
-                GL.glPopMatrix();
-
-                // front side
-
-                if (i_DrawWithTexturesAndColors)
-                {
-                    GL.glEnable(GL.GL_TEXTURE_2D);
-                    GL.glBindTexture(GL.GL_TEXTURE_2D, texture[7]);
-                }
-
-                GL.glPushMatrix();
-                GL.glTranslatef(0.95f, 0.2f, 2.02f);
-                GL.glScalef(0.1f, 0.15f, 0.001f);
-                drawCube();
-                GL.glPopMatrix();
-
-                if (i_DrawWithTexturesAndColors)
-                {
-                    GL.glDisable(GL.GL_TEXTURE_2D);
-                }
+                drawDrawerSides();
+                drawDrawerBottom();
+                drawDrawerFront(i_DrawWithTexturesAndColors);
 
                 GL.glPopMatrix();
 
                 drawerXDelta += 1.99f;
             }
+        }
 
+        private void drawDrawerSides()
+        {
+            drawScaledCube(0.0f, 0.25f, 0.0f, 0.005f, 0.095f, 0.2f);
+            drawScaledCube(1.9f, 0.25f, 0.0f, 0.005f, 0.095f, 0.2f);
+        }
+
+        private void drawDrawerBottom()
+        {
+            drawScaledCube(0.95f, -0.63f, 0.0f, 0.088f, 0.005f, 0.2f);
+        }
+
+        private void drawDrawerFront(bool i_DrawWithTexturesAndColors)
+        {
+            if (i_DrawWithTexturesAndColors)
+            {
+                GL.glEnable(GL.GL_TEXTURE_2D);
+                GL.glBindTexture(GL.GL_TEXTURE_2D, texture[7]);
+            }
+
+            drawScaledCube(0.95f, 0.2f, 2.02f, 0.1f, 0.15f, 0.001f);
+
+            if (i_DrawWithTexturesAndColors)
+            {
+                GL.glDisable(GL.GL_TEXTURE_2D);
+            }
+        }
+
+        private void drawDoors(bool i_DrawWithTexturesAndColors)
+        {
             GL.glPushMatrix();
             GL.glTranslatef(-0.5f, 0f, 2.02f);
 
@@ -1168,12 +1173,8 @@ namespace OpenGL
                 GL.glEnable(GL.GL_TEXTURE_2D);
                 GL.glBindTexture(GL.GL_TEXTURE_2D, texture[5]);
             }
-            
-            GL.glPushMatrix();
-            GL.glTranslatef(2.95f, 6.51f, 3.0f);
-            GL.glScalef(0.105f, 0.376f, 0.005f);
-            drawCube();
-            GL.glPopMatrix();
+
+            drawScaledCube(2.95f, 6.51f, 3.0f, 0.105f, 0.376f, 0.005f);
 
             if (i_DrawWithTexturesAndColors)
             {
@@ -1189,11 +1190,7 @@ namespace OpenGL
                 GL.glBindTexture(GL.GL_TEXTURE_2D, texture[8]);
             }
 
-            GL.glPushMatrix();
-            GL.glTranslatef(-0.96f, 6.51f, 3.0f);
-            GL.glScalef(0.105f, 0.376f, 0.005f);
-            drawCube();
-            GL.glPopMatrix();
+            drawScaledCube(-0.96f, 6.51f, 3.0f, 0.105f, 0.376f, 0.005f);
 
             if (i_DrawWithTexturesAndColors)
             {
@@ -1207,11 +1204,7 @@ namespace OpenGL
                 GL.glBindTexture(GL.GL_TEXTURE_2D, texture[8]);
             }
 
-            GL.glPushMatrix();
-            GL.glTranslatef(2.95f, 6.51f, 3.0f);
-            GL.glScalef(0.105f, 0.376f, 0.005f);
-            drawCube();
-            GL.glPopMatrix();
+            drawScaledCube(2.95f, 6.51f, 3.0f, 0.105f, 0.376f, 0.005f);
 
             if (i_DrawWithTexturesAndColors)
             {
@@ -1219,25 +1212,20 @@ namespace OpenGL
             }
 
             GL.glPopMatrix();
+        }
 
+        private void drawClosetSides(bool i_DrawWithTexturesAndColors)
+        {
             if (i_DrawWithTexturesAndColors)
             {
                 GL.glColor3f(0.8f, 0.8f, 0.8f);
             }
 
             // left side
-            GL.glPushMatrix();
-            GL.glTranslatef(-2.5f, 5.0f, 3f);
-            GL.glScalef(0.001f, 0.53f, 0.2f);
-            drawCube();
-            GL.glPopMatrix();
+            drawScaledCube(-2.5f, 5.0f, 3f, 0.001f, 0.53f, 0.2f);
 
             // right side
-            GL.glPushMatrix();
-            GL.glTranslatef(5.5f, 5.0f, 3f);
-            GL.glScalef(0.001f, 0.53f, 0.2f);
-            drawCube();
-            GL.glPopMatrix();
+            drawScaledCube(5.5f, 5.0f, 3f, 0.001f, 0.53f, 0.2f);
 
             //back side
             GL.glPushMatrix();
@@ -1246,8 +1234,14 @@ namespace OpenGL
             GL.glScalef(0.001f, 0.53f, 0.4f);
             drawCube();
             GL.glPopMatrix();
+        }
 
-
+        private void drawScaledCube(float i_X, float i_Y, float i_Z, float i_ScaleX, float i_ScaleY, float i_ScaleZ)
+        {
+            GL.glPushMatrix();
+            GL.glTranslatef(i_X, i_Y, i_Z);
+            GL.glScalef(i_ScaleX, i_ScaleY, i_ScaleZ);
+            drawCube();
             GL.glPopMatrix();
         }
 
@@ -1308,32 +1302,16 @@ namespace OpenGL
             }
 
             // table left leg
-            GL.glPushMatrix();
-            GL.glTranslatef(23.0f, 1.8f, 19.89f);
-            GL.glScalef(0.05f, 0.17f, 0.03f);
-            drawCube();
-            GL.glPopMatrix();
+            drawScaledCube(23.0f, 1.8f, 19.89f, 0.05f, 0.17f, 0.03f);
 
             // table right leg
-            GL.glPushMatrix();
-            GL.glTranslatef(23.0f, 1.8f, 23.5f);
-            GL.glScalef(0.05f, 0.17f, 0.03f);
-            drawCube();
-            GL.glPopMatrix();
+            drawScaledCube(23.0f, 1.8f, 23.5f, 0.05f, 0.17f, 0.03f);
 
             // table plate
-            GL.glPushMatrix();
-            GL.glTranslatef(23.0f, 3.5f, 21.7f);
-            GL.glScalef(0.05f, 0.016f, 0.21f);
-            drawCube();
-            GL.glPopMatrix();
+            drawScaledCube(23.0f, 3.5f, 21.7f, 0.05f, 0.016f, 0.21f);
 
             // table upper panel
-            GL.glPushMatrix();
-            GL.glTranslatef(22.989f, 8.94f, 21.7f);
-            GL.glScalef(0.05f, 0.01f, 0.21f);
-            drawCube();
-            GL.glPopMatrix();
+            drawScaledCube(22.989f, 8.94f, 21.7f, 0.05f, 0.01f, 0.21f);
 
             // table left panel
             GL.glPushMatrix();
@@ -1356,26 +1334,14 @@ namespace OpenGL
                 GL.glDisable(GL.GL_TEXTURE_2D);
             }
 
-            // LED lamp
             if (i_DrawWithTexturesAndColors)
             {
-                GL.glDisable(GL.GL_TEXTURE_2D);
-
-                
                 GL.glEnable(GL.GL_TEXTURE_2D);
                 GL.glBindTexture(GL.GL_TEXTURE_2D, texture[11]);
-            }
-
-            if (i_DrawWithTexturesAndColors)
-            {
                 GL.glColor3f(1.0f, 1.0f, 1.0f);
             }
-                
-            GL.glPushMatrix();
-            GL.glTranslatef(22.989f, 8.73f, 21.7f);
-            GL.glScalef(0.02f, 0.01f, 0.15f);
-            drawCube();
-            GL.glPopMatrix();
+
+            drawScaledCube(22.989f, 8.73f, 21.7f, 0.02f, 0.01f, 0.15f);
 
             if (i_DrawWithTexturesAndColors)
             {
@@ -1450,7 +1416,9 @@ namespace OpenGL
 
                 GL.glPushMatrix();
                 GL.glTranslatef(-0.96f, 6.51f, 3.0f);
+                GL.glTranslatef(-1f, 0f, 0f);
                 GL.glRotatef(-doorAngle, 0.0f, 1.0f, 0.0f);
+                GL.glTranslatef(1f, 0f, 0f);
                 GL.glScalef(0.105f, 0.376f, 0.005f);
                 drawCube();
                 GL.glPopMatrix();
@@ -1473,9 +1441,13 @@ namespace OpenGL
 
                 GL.glPushMatrix();
                 GL.glTranslatef(-0.96f, 6.51f, 3.0f);
-                GL.glRotatef(doorAngle, 0.0f, 1.0f, 0.0f);
+                GL.glTranslatef(-1f, 0f, 0f);
+                GL.glRotatef(doorAngle, 0.0f, -1.0f, 0.0f);
+                GL.glTranslatef(1f, 0f, 0f);
                 GL.glScalef(0.105f, 0.376f, 0.005f);
+
                 drawCube();
+                
                 GL.glPopMatrix();
 
                 if (i_DrawWithTexturesAndColors)
@@ -1488,25 +1460,43 @@ namespace OpenGL
         private void drawClothes()
         {
             float height = 6.20f;
-            uint texture_num = 12;
+            uint textureNum = 12;
+            const float initialX = 12.5f;
+            const float initialZ = 5.0f;
+            const float rotationAngle = 90.0f;
+            const float scaleX = 0.10f;
+            const float scaleY = 0.01f;
+            const float scaleZ = 0.12f;
+            const float heightIncrement = 3.5f;
+
+            // Set the color for all clothes
             GL.glColor3f(1.0f, 1.0f, 1.0f);
 
             for (int i = 0; i < 3; i++)
             {
+                // Enable texture for each piece of clothing
                 GL.glEnable(GL.GL_TEXTURE_2D);
-                GL.glBindTexture(GL.GL_TEXTURE_2D, texture[texture_num]);
+                GL.glBindTexture(GL.GL_TEXTURE_2D, texture[textureNum]);
+
+                // Draw the clothing piece
                 GL.glPushMatrix();
-                GL.glTranslatef(12.5f, height, 5.0f);
-                GL.glRotatef(90.0f, 1.0f, 0.0f, 0.0f);
-                GL.glScalef(0.10f, 0.01f, 0.12f);
+                GL.glTranslatef(initialX, height, initialZ);
+                GL.glRotatef(rotationAngle, 1.0f, 0.0f, 0.0f);
+                GL.glScalef(scaleX, scaleY, scaleZ);
                 drawCube();
                 GL.glPopMatrix();
+
+                // Disable texture after drawing
                 GL.glDisable(GL.GL_TEXTURE_2D);
 
-                height += 3.5f;
+                // Update height for the next piece of clothing
+                height += heightIncrement;
 
+                // Change the texture for the second piece
                 if (i == 1)
-                    texture_num++;
+                {
+                    textureNum++;
+                }
             }
         }
 
@@ -1519,19 +1509,13 @@ namespace OpenGL
                 else
                     GL.glColor3d(0.8, 0.8, 0.8);
             }
-            else
-            {
-                GL.glColor3d(0.3f, 0.6f, 0.9f);
-            }
 
             drawBed(!isForShades);
             drawCloset(!isForShades);
             drawFloorLamp(!isForShades);
             drawDressingTable(!isForShades);
-            drawMirror(!isForShades);
             drawWindow();
         }
     }
-
 }
 

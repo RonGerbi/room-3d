@@ -113,11 +113,12 @@ namespace OpenGL
             GL.glVertex3f(0.0f, 0.0f, 3.0f);
             GL.glEnd();
         }
-        void DrawFigures()
+
+        void DrawFigures(bool i_DrawWithShadows)
         {
             GL.glPushMatrix(); // Save the current transformation matrix
             GL.glTranslatef(-12.5f, 0.0f, 0.0f);
-            drawFloor(25f, 0f, 0f, 0f);
+
             drawLamp();
 
             if (isCeilingLightBulbOn)
@@ -131,17 +132,24 @@ namespace OpenGL
 
             DrawObjects(false, 1);
 
-            if (applyShadows)
+            if (i_DrawWithShadows)
             {
-                GL.glDisable(GL.GL_LIGHTING);
-                // Draw shadow
-                GL.glPushMatrix(); // Save matrix for shadow drawing
-                MakeShadowMatrix(floor);
-                GL.glMultMatrixf(cubeXform);
-                DrawObjects(true, 0);
-                GL.glPopMatrix(); // Restore matrix after drawing shadow
-            }
+                if (applyShadows)
+                {
+                    GL.glPushMatrix();
+                    GL.glTranslatef(0f, 0.01f, 0f);
 
+                    GL.glDisable(GL.GL_LIGHTING);
+                    // Draw shadow
+                    GL.glPushMatrix(); // Save matrix for shadow drawing
+                    MakeShadowMatrix(floor);
+                    GL.glMultMatrixf(cubeXform);
+                    DrawObjects(true, 1);
+                    GL.glPopMatrix(); // Restore matrix after drawing shadow
+
+                    GL.glPopMatrix();
+                }
+            }
             GL.glPopMatrix(); // Restore the initial transformation matrix
         }
 
@@ -155,14 +163,15 @@ namespace OpenGL
         public float xAngle = 0.0f;
         public int intOptionC = 0;
         double[] AccumulatedRotationsTraslations = new double[16];
+
+
         public void Draw()
         {
             if (m_uint_DC == 0 || m_uint_RC == 0)
                 return;
 
-            GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
-
-            //FULL and COMPLICATED				
+            GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT | GL.GL_STENCIL_BUFFER_BIT);
+			
             GL.glViewport(0, 0, Width, Height);
             GL.glLoadIdentity();
 
@@ -243,14 +252,64 @@ namespace OpenGL
             //multiply it by KeyCode defined AccumulatedRotationsTraslations matrix
             GL.glMultMatrixd(AccumulatedRotationsTraslations);
 
-            //DrawAxes();
+            //REFLECTION b    	
 
-            DrawFigures();
+            //only floor, draw only to STENCIL buffer
+            GL.glEnable(GL.GL_STENCIL_TEST);
+            GL.glStencilOp(GL.GL_REPLACE, GL.GL_REPLACE, GL.GL_REPLACE);
+            GL.glStencilFunc(GL.GL_ALWAYS, 1, 0xFFFFFFFF); // draw floor always
+            GL.glColorMask((byte)GL.GL_FALSE, (byte)GL.GL_FALSE, (byte)GL.GL_FALSE, (byte)GL.GL_FALSE);
+            GL.glDisable(GL.GL_DEPTH_TEST);
+
+            GL.glTranslatef(-12.5f, 0.0f, 0.0f);
+
+            drawFloor(25f, 0f, 0f, 0f);
+
+            GL.glTranslatef(12.5f, 0f, 0f);
+
+            // restore regular settings
+            GL.glColorMask((byte)GL.GL_TRUE, (byte)GL.GL_TRUE, (byte)GL.GL_TRUE, (byte)GL.GL_TRUE);
+            GL.glEnable(GL.GL_DEPTH_TEST);
+
+            // reflection is drawn only where STENCIL buffer value equal to 1
+            GL.glStencilFunc(GL.GL_EQUAL, 1, 0xFFFFFFFF);
+            GL.glStencilOp(GL.GL_KEEP, GL.GL_KEEP, GL.GL_KEEP);
+
+            GL.glEnable(GL.GL_STENCIL_TEST);
+
+            // draw reflected scene
+            GL.glPushMatrix();
+            GL.glScalef(1, -1, 1); //swap on Z axis
+            GL.glEnable(GL.GL_CULL_FACE);
+            GL.glCullFace(GL.GL_BACK);
+            DrawFigures(false);
+            GL.glCullFace(GL.GL_FRONT);
+            DrawFigures(false);
+            GL.glDisable(GL.GL_CULL_FACE);
+            GL.glPopMatrix();
+
+
+            // really draw floor 
+            //( half-transparent ( see its color's alpha byte)))
+            // in order to see reflected objects 
+            GL.glDepthMask((byte)GL.GL_FALSE);
+            GL.glPushMatrix();
+            GL.glTranslatef(-12.5f, 0.0f, 0.0f);
+
+            drawFloor(25f, 0f, 0f, 0f);
+
+            GL.glPopMatrix();
+            GL.glDepthMask((byte)GL.GL_TRUE);
+            // Disable GL.GL_STENCIL_TEST to show All, else it will be cut on GL.GL_STENCIL
+            GL.glDisable(GL.GL_STENCIL_TEST);
+
+            //////////////
+
+            DrawFigures(true);
 
             GL.glFlush();
 
             WGL.wglSwapBuffers(m_uint_DC);
-
         }
 
         protected virtual void InitializeGL()
@@ -336,6 +395,11 @@ namespace OpenGL
             GL.glEnable(GL.GL_LIGHT0);
             GL.glEnable(GL.GL_COLOR_MATERIAL);
 
+
+            GL.glEnable(GL.GL_BLEND);
+            GL.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
+            GL.glEnable(GL.GL_STENCIL_TEST);
+
             // Configure the light properties
             float[] ambientLight = { 0.2f, 0.2f, 0.2f, 1.0f };  // Ambient light
             float[] diffuseLight = { 0.8f, 0.8f, 0.8f, 1.0f };  // Diffuse light
@@ -403,23 +467,28 @@ namespace OpenGL
 
         private void drawFloor(float i_Length, float i_RootX, float i_RootY, float i_RootZ)
         {
-            GL.glColor3f(1.0f, 1.0f, 1.0f);
+            GL.glEnable(GL.GL_BLEND); // Enable blending
+            GL.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA); // Set blending function
+
+            GL.glColor4f(1.0f, 1.0f, 1.0f, 0.5f); // Set color with alpha (0.5 for 50% transparency)
+
             GL.glEnable(GL.GL_TEXTURE_2D);
             GL.glBindTexture(GL.GL_TEXTURE_2D, texture[0]);
             GL.glDisable(GL.GL_LIGHTING);
 
-
             GL.glBegin(GL.GL_QUADS);
-            GL.glTexCoord2f(1.0f, 1.0f);			// top right of texture
-            GL.glVertex3f(i_RootX + i_Length, i_RootY, i_RootZ + i_Length);		// top right of quad
-            GL.glTexCoord2f(0.0f, 1.0f);			// top left of texture
-            GL.glVertex3f(i_RootX, i_RootY, i_RootZ + i_Length);		// top left of quad
-            GL.glTexCoord2f(0.0f, 0.0f);			// bottom left of texture
-            GL.glVertex3f(i_RootX, i_RootY, i_RootZ);	    // bottom left of quad
-            GL.glTexCoord2f(1.0f, 0.0f);			// bottom right of texture
-            GL.glVertex3f(i_RootX + i_Length, i_RootY, i_RootZ);		// bottom right of quad
+            GL.glTexCoord2f(1.0f, 1.0f); // Top right of texture
+            GL.glVertex3f(i_RootX + i_Length, i_RootY, i_RootZ + i_Length); // Top right of quad
+            GL.glTexCoord2f(0.0f, 1.0f); // Top left of texture
+            GL.glVertex3f(i_RootX, i_RootY, i_RootZ + i_Length); // Top left of quad
+            GL.glTexCoord2f(0.0f, 0.0f); // Bottom left of texture
+            GL.glVertex3f(i_RootX, i_RootY, i_RootZ); // Bottom left of quad
+            GL.glTexCoord2f(1.0f, 0.0f); // Bottom right of texture
+            GL.glVertex3f(i_RootX + i_Length, i_RootY, i_RootZ); // Bottom right of quad
             GL.glEnd();
+
             GL.glDisable(GL.GL_TEXTURE_2D);
+            GL.glDisable(GL.GL_BLEND); // Disable blending after drawing
         }
 
         private void drawRectangle(float i_Length, float i_RootX, float i_RootY, float i_RootZ, float i_Red, float i_Green, float i_Blue)
@@ -1056,7 +1125,6 @@ namespace OpenGL
                 GL.glColor3f(1.0f, 1.0f, 1.0f);
             }
 
-            GL.glDisable(GL.GL_LIGHTING);
             GLU.gluQuadricTexture(obj, (byte)GL.GL_TRUE);
             GL.glPushMatrix();
             GL.glTranslatef(1.5f, 0.60f, 15f);
@@ -1247,12 +1315,12 @@ namespace OpenGL
 
         private void drawMirror(bool i_DrawWithTexturesAndColors)
         {
-            GL.glEnable(GL.GL_STENCIL_TEST);
-            GL.glClear(GL.GL_STENCIL_BUFFER_BIT);
+            //GL.glEnable(GL.GL_STENCIL_TEST);
+            //GL.glClear(GL.GL_STENCIL_BUFFER_BIT);
 
             // Draw the mirror
-            GL.glStencilFunc(GL.GL_ALWAYS, 1, 1);
-            GL.glStencilOp(GL.GL_KEEP, GL.GL_KEEP, GL.GL_REPLACE);
+            //GL.glStencilFunc(GL.GL_ALWAYS, 1, 1);
+            //GL.glStencilOp(GL.GL_KEEP, GL.GL_KEEP, GL.GL_REPLACE);
 
             GL.glPushMatrix();
 
@@ -1275,17 +1343,17 @@ namespace OpenGL
             GL.glPopMatrix();
 
             // Configure stencil buffer for reflection
-            GL.glStencilFunc(GL.GL_EQUAL, 1, 1);
-            GL.glStencilOp(GL.GL_KEEP, GL.GL_KEEP, GL.GL_KEEP);
+            //GL.glStencilFunc(GL.GL_EQUAL, 1, 1);
+            //GL.glStencilOp(GL.GL_KEEP, GL.GL_KEEP, GL.GL_KEEP);
 
             // Draw the reflected object
-            GL.glPushMatrix();
-            GL.glScalef(1.0f, -1.0f, 1.0f); // Flip the object for reflection
-            GL.glTranslatef(0.0f, -12.4f, 0.0f); // Adjust position for reflection
-            drawCube(); // Example of reflected cube, color red
-            GL.glPopMatrix();
+            //GL.glPushMatrix();
+            //GL.glScalef(1.0f, -1.0f, 1.0f); // Flip the object for reflection
+            //GL.glTranslatef(0.0f, -12.4f, 0.0f); // Adjust position for reflection
+            //drawCube(); // Example of reflected cube, color red
+            //GL.glPopMatrix();
 
-            GL.glDisable(GL.GL_STENCIL_TEST);
+            //GL.glDisable(GL.GL_STENCIL_TEST);
         }
 
         private void drawDressingTable(bool i_DrawWithTexturesAndColors)
@@ -1509,12 +1577,13 @@ namespace OpenGL
                 else
                     GL.glColor3d(0.8, 0.8, 0.8);
             }
-
+            
             drawBed(!isForShades);
+            drawSphere(!isForShades);
             drawCloset(!isForShades);
             drawFloorLamp(!isForShades);
-            drawDressingTable(!isForShades);
             drawWindow();
+            drawDressingTable(!isForShades);
         }
     }
 }

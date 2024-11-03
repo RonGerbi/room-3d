@@ -7,6 +7,7 @@ using System.Drawing;
 using System.Security.AccessControl;
 using System.Runtime.InteropServices.ComTypes;
 using System.Runtime.CompilerServices;
+using myOpenGL;
 
 namespace OpenGL
 {
@@ -21,6 +22,7 @@ namespace OpenGL
         public bool isDoorOpen = false;
         public bool isCeilingLightBulbOn = true;
         public bool applyShadows = true;
+        public Closet closet = new Closet();
         int Width;
         int Height;
 
@@ -1233,21 +1235,14 @@ namespace OpenGL
             GL.glTranslatef(-0.5f, 0f, 2.02f);
 
             // left door
+            GL.glTranslatef(-0.96f, 6.51f, 3.0f);
             drawDynamicLeftDoor(isDoorOpen, i_DrawWithTexturesAndColors);
 
-            // right door
-            if (i_DrawWithTexturesAndColors)
-            {
-                GL.glEnable(GL.GL_TEXTURE_2D);
-                GL.glBindTexture(GL.GL_TEXTURE_2D, texture[5]);
-            }
 
-            drawScaledCube(2.95f, 6.51f, 3.0f, 0.105f, 0.376f, 0.005f);
+            GL.glTranslatef(4.1f, 0f, 0.0f);
+            drawDynamicLeftDoor(isDoorOpen, i_DrawWithTexturesAndColors);
+            GL.glTranslatef(-3.14f, -6.51f, -3.0f);
 
-            if (i_DrawWithTexturesAndColors)
-            {
-                GL.glDisable(GL.GL_TEXTURE_2D);
-            }
 
             GL.glTranslatef(2f, 0.0f, 0.0f);
 
@@ -1483,7 +1478,6 @@ namespace OpenGL
                 }
 
                 GL.glPushMatrix();
-                GL.glTranslatef(-0.96f, 6.51f, 3.0f);
                 GL.glTranslatef(-1f, 0f, 0f);
                 GL.glRotatef(-doorAngle, 0.0f, 1.0f, 0.0f);
                 GL.glTranslatef(1f, 0f, 0f);
@@ -1508,7 +1502,6 @@ namespace OpenGL
                 }
 
                 GL.glPushMatrix();
-                GL.glTranslatef(-0.96f, 6.51f, 3.0f);
                 GL.glTranslatef(-1f, 0f, 0f);
                 GL.glRotatef(doorAngle, 0.0f, -1.0f, 0.0f);
                 GL.glTranslatef(1f, 0f, 0f);
@@ -1570,6 +1563,8 @@ namespace OpenGL
 
         private void DrawObjects(bool isForShades, int c)
         {
+            uint? clothesTexture = null, doorTexture = null, drawerTexture = null;
+
             if (isForShades)
             {
                 if (c == 1)
@@ -1577,13 +1572,27 @@ namespace OpenGL
                 else
                     GL.glColor3d(0.8, 0.8, 0.8);
             }
+            else
+            {
+                clothesTexture = texture[12];
+                doorTexture = texture[8];
+                drawerTexture = texture[7];
+            }
             
             drawBed(!isForShades);
             drawSphere(!isForShades);
-            drawCloset(!isForShades);
+            //drawCloset(!isForShades);
             drawFloorLamp(!isForShades);
             drawWindow();
             drawDressingTable(!isForShades);
+
+            GL.glPushMatrix();
+            GL.glTranslatef(15.0f, 0.5f, 0.0f);
+            GL.glScalef(1.5f, 1.5f, 1.2f);
+
+            closet.Draw(clothesTexture, doorTexture, drawerTexture);
+
+            GL.glPopMatrix();
         }
     }
 }

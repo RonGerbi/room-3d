@@ -43,7 +43,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Closet.cs" />
     <Compile Include="cOGL.cs" />
+    <Compile Include="Cube.cs" />
+    <Compile Include="Door.cs" />
+    <Compile Include="eDoorSides.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>

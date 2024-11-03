@@ -51,6 +51,18 @@ namespace myOpenGL
                 case 'O':
                     cGL.isDoorOpen = !cGL.isDoorOpen;
                     break;
+                case 'K':
+                    cGL.closet.OpenAllDoors();
+                    break;
+                case 'M':
+                    cGL.closet.CloseAllDoors();
+                    break;
+                case 'H':
+                    cGL.closet.SwitchSelectedDoor();
+                    break;
+                case 'N':
+                    cGL.closet.UnselectDoor();
+                    break;
             }
         }
 

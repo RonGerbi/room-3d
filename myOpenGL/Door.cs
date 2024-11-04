@@ -6,7 +6,7 @@ using System.Text;
 
 namespace myOpenGL
 {
-    public class Door
+    public class Door : SelectableObject
     {
         private const float k_ClosedAngle = 0f;
         private const float k_OpenAngle = 90f;
@@ -15,18 +15,15 @@ namespace myOpenGL
         private float m_ToAngle;
         private float m_Angle;
 
-        private Color m_HighlightColor;
         public eDoorSides DoorSides { get; set; }
-        public bool Select { get; set; }
 
-        public Door(eDoorSides i_DoorSides)
+        public Door(eDoorSides i_DoorSides) : base()
         {
             DoorSides = i_DoorSides;
             m_Angle = k_ClosedAngle;
-            m_HighlightColor = Color.Yellow;
         }
 
-        public float MoveToAngle
+        private float MoveToAngle
         {
             set
             {
@@ -45,17 +42,14 @@ namespace myOpenGL
             }
         }
 
-        public void Draw(uint? texture)
+        public override void Draw(uint? i_Texture)
         {
-            if (texture.HasValue)
+            if (i_Texture.HasValue)
             {
-                if (Select)
-                {
-                    GL.glColor3f(m_HighlightColor.R / 255, m_HighlightColor.G / 255, m_HighlightColor.B / 255);
-                }
+                ApplySelectedColor();
 
                 GL.glEnable(GL.GL_TEXTURE_2D);
-                GL.glBindTexture(GL.GL_TEXTURE_2D, texture.Value);
+                GL.glBindTexture(GL.GL_TEXTURE_2D, i_Texture.Value);
             }
 
             GL.glPushMatrix();
@@ -72,14 +66,14 @@ namespace myOpenGL
             switch (DoorSides)
             {
                 case eDoorSides.Left:
-                    GL.glTranslatef(-1f, 0f, 0f);
+                    GL.glTranslatef(-0.9f, 0f, 0f);
                     GL.glRotatef(-m_Angle, 0.0f, 1.0f, 0.0f);
-                    GL.glTranslatef(1f, 0f, 0f);
+                    GL.glTranslatef(0.9f, 0f, 0f);
                     break;
                 case eDoorSides.Right:
-                    GL.glTranslatef(1f, 0f, 0f);
+                    GL.glTranslatef(0.9f, 0f, 0f);
                     GL.glRotatef(m_Angle, 0.0f, 1.0f, 0.0f);
-                    GL.glTranslatef(-1f, 0f, 0f);
+                    GL.glTranslatef(-0.9f, 0f, 0f);
                     break;
             }
 
@@ -88,10 +82,20 @@ namespace myOpenGL
 
             GL.glPopMatrix();
 
-            if (texture.HasValue)
+            if (i_Texture.HasValue)
             {
                 GL.glDisable(GL.GL_TEXTURE_2D);
             }
+        }
+
+        public override void Open()
+        {
+            MoveToAngle = k_OpenAngle;
+        }
+
+        public override void Close()
+        {
+            MoveToAngle = k_ClosedAngle;
         }
     }
 }

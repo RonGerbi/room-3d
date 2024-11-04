@@ -10,14 +10,31 @@ namespace myOpenGL
     public class Closet
     {
         private int? m_SelectedDoorIdx = null;
+        private List<SelectableObject> m_Selectables;
         private List<Door> m_Doors;
+        private List<Drawer> m_Drawers;
 
         public Closet()
         {
-            m_Doors = new List<Door>() { new Door(eDoorSides.Left), new Door(eDoorSides.Right), new Door(eDoorSides.Left), new Door(eDoorSides.Right) };
+            int numOfDoors = 4;
+            int numOfDrawers = 4;
+            
+            m_Selectables = new List<SelectableObject>(numOfDoors + numOfDrawers);
+            m_Doors = new List<Door>(numOfDoors) { new Door(eDoorSides.Left), new Door(eDoorSides.Right), new Door(eDoorSides.Left), new Door(eDoorSides.Right) };
+            m_Drawers = new List<Drawer>(numOfDrawers);
+
+            foreach (Door door in m_Doors)
+            {
+                m_Selectables.Add(door);
+            }
+            for (int i = 0; i < numOfDrawers; i++)
+            {
+                m_Drawers.Add(new Drawer());
+                m_Selectables.Add(m_Drawers[i]);
+            }
         }
 
-        public void SwitchSelectedDoor()
+        public void SwitchSelectedObject()
         {
             if (m_SelectedDoorIdx == null)
             {
@@ -25,24 +42,24 @@ namespace myOpenGL
             }
             else
             {
-                m_Doors[m_SelectedDoorIdx.Value].Select = false;
-                m_SelectedDoorIdx = (m_SelectedDoorIdx + 1) % m_Doors.Count;
+                m_Selectables[m_SelectedDoorIdx.Value].Select = false;
+                m_SelectedDoorIdx = (m_SelectedDoorIdx + 1) % m_Selectables.Count;
             }
 
-            m_Doors[m_SelectedDoorIdx.Value].Select = true;
+            m_Selectables[m_SelectedDoorIdx.Value].Select = true;
         }
 
-        public void UnselectDoor()
+        public void UnselectObjects()
         {
             m_SelectedDoorIdx = null;
 
-            foreach (Door door in m_Doors)
+            foreach (SelectableObject selectable in m_Selectables)
             {
-                door.Select = false;
+                selectable.Select = false;
             }
         }
 
-        public void Draw(uint? i_ClothesTexture, uint? i_DoorTexture, uint? i_DrawerTexture)
+        public void Draw(uint? i_ClothesTexture, uint? i_DoorLeftTexture, uint? i_DoorRightTexture, uint? i_DrawerTexture)
         {
             if (i_ClothesTexture.HasValue)
             {
@@ -58,43 +75,43 @@ namespace myOpenGL
 
             drawShelves(ref shelfHeightDelta);
             drawDrawers(i_DrawerTexture);
-            drawDoors(i_DoorTexture);
+            drawDoors(i_DoorLeftTexture, i_DoorRightTexture);
             drawClosetSides(i_ClothesTexture.HasValue);
         }
 
-        public void OpenSelectedDoor()
+        public void OpenSelectedObject()
         {
             if (m_SelectedDoorIdx != null)
             {
-                m_Doors[m_SelectedDoorIdx.Value].MoveToAngle = 90f;
+                m_Selectables[m_SelectedDoorIdx.Value].Open();
             }
         }
 
-        public void CloseSelectedDoor()
+        public void CloseSelectedObject()
         {
             if (m_SelectedDoorIdx != null)
             {
-                m_Doors[m_SelectedDoorIdx.Value].MoveToAngle = 0f;
+                m_Selectables[m_SelectedDoorIdx.Value].Close();
             }
         }
 
-        public void OpenAllDoors()
+        public void OpenAllObjects()
         {
-            foreach (Door door in m_Doors)
+            foreach (SelectableObject selectable in m_Selectables)
             {
-                door.MoveToAngle = 90f;
+                selectable.Open();
             }
         }
 
-        public void CloseAllDoors()
+        public void CloseAllObjects()
         {
-            foreach (Door door in m_Doors)
+            foreach (SelectableObject selectable in m_Selectables)
             {
-                door.MoveToAngle = 0f;
+                selectable.Close();
             }
         }
 
-        private void drawDoors(uint? texture)
+        private void drawDoors(uint? i_DoorLeftTexture, uint? i_DoorRightTexture)
         {
             GL.glPushMatrix();
             GL.glTranslatef(-0.5f, 0f, 2.02f);
@@ -104,7 +121,7 @@ namespace myOpenGL
 
             foreach (Door door in m_Doors)
             {
-                door.Draw(texture);
+                door.Draw(door.DoorSides == eDoorSides.Left ? i_DoorLeftTexture : i_DoorRightTexture);
                 GL.glTranslatef(2f, 0f, 0.0f);
             }
 
@@ -119,10 +136,10 @@ namespace myOpenGL
             }
 
             // left side
-            drawScaledCube(-2.5f, 5.0f, 3f, 0.001f, 0.53f, 0.2f);
+            Cube.DrawScaledCube(-2.5f, 5.0f, 3f, 0.001f, 0.53f, 0.2f);
 
             // right side
-            drawScaledCube(5.5f, 5.0f, 3f, 0.001f, 0.53f, 0.2f);
+            Cube.DrawScaledCube(5.5f, 5.0f, 3f, 0.001f, 0.53f, 0.2f);
 
             //back side
             GL.glPushMatrix();
@@ -133,60 +150,21 @@ namespace myOpenGL
             GL.glPopMatrix();
         }
 
-        private void drawDrawers(uint? texture)
+        private void drawDrawers(uint? i_Texture)
         {
             float drawerXDelta = -2.43f;
 
-            for (int i = 0; i < 4; i++)
+            foreach (Drawer drawer in m_Drawers)
             {
-                // drawer
                 GL.glPushMatrix();
                 GL.glTranslatef(drawerXDelta, 1.0f, 3.0f);
 
-                drawDrawerSides();
-                drawDrawerBottom();
-                drawDrawerFront(texture);
+                drawer.Draw(i_Texture);
 
                 GL.glPopMatrix();
 
                 drawerXDelta += 1.99f;
             }
-        }
-
-        private void drawDrawerSides()
-        {
-            drawScaledCube(0.0f, 0.25f, 0.0f, 0.005f, 0.095f, 0.2f);
-            drawScaledCube(1.9f, 0.25f, 0.0f, 0.005f, 0.095f, 0.2f);
-        }
-
-        private void drawDrawerBottom()
-        {
-            drawScaledCube(0.95f, -0.63f, 0.0f, 0.088f, 0.005f, 0.2f);
-        }
-
-        private void drawDrawerFront(uint? texture)
-        {
-            if (texture.HasValue)
-            {
-                GL.glEnable(GL.GL_TEXTURE_2D);
-                GL.glBindTexture(GL.GL_TEXTURE_2D, texture.Value);
-            }
-
-            drawScaledCube(0.95f, 0.2f, 2.02f, 0.1f, 0.15f, 0.001f);
-
-            if (texture.HasValue)
-            {
-                GL.glDisable(GL.GL_TEXTURE_2D);
-            }
-        }
-
-        private void drawScaledCube(float i_X, float i_Y, float i_Z, float i_ScaleX, float i_ScaleY, float i_ScaleZ)
-        {
-            GL.glPushMatrix();
-            GL.glTranslatef(i_X, i_Y, i_Z);
-            GL.glScalef(i_ScaleX, i_ScaleY, i_ScaleZ);
-            Cube.Draw();
-            GL.glPopMatrix();
         }
 
         private void drawShelves(ref float i_ShelfHeightDelta)

@@ -76,5 +76,14 @@ namespace myOpenGL
             GL.glVertex3f(-10.0f, 10.0f, 10.0f);
             GL.glEnd();
         }
+
+        internal static void DrawScaledCube(float i_X, float i_Y, float i_Z, float i_ScaleX, float i_ScaleY, float i_ScaleZ)
+        {
+            GL.glPushMatrix();
+            GL.glTranslatef(i_X, i_Y, i_Z);
+            GL.glScalef(i_ScaleX, i_ScaleY, i_ScaleZ);
+            Draw();
+            GL.glPopMatrix();
+        }
     }
 }

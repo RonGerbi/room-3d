@@ -48,20 +48,23 @@ namespace myOpenGL
                 case 'L':
                     cGL.applyShadows = !cGL.applyShadows;
                     break;
-                case 'O':
-                    cGL.isDoorOpen = !cGL.isDoorOpen;
-                    break;
                 case 'K':
-                    cGL.closet.OpenAllDoors();
+                    cGL.closet.OpenAllObjects();
                     break;
                 case 'M':
-                    cGL.closet.CloseAllDoors();
+                    cGL.closet.CloseAllObjects();
                     break;
                 case 'H':
-                    cGL.closet.SwitchSelectedDoor();
+                    cGL.closet.SwitchSelectedObject();
                     break;
                 case 'N':
-                    cGL.closet.UnselectDoor();
+                    cGL.closet.UnselectObjects();
+                    break;
+                case 'U':
+                    cGL.closet.OpenSelectedObject();
+                    break;
+                case 'Y':
+                    cGL.closet.CloseSelectedObject();
                     break;
             }
         }

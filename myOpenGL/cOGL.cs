@@ -14,6 +14,8 @@ namespace OpenGL
     class cOGL
     {
         private readonly string r_TexturePath = "C:\\Users\\רון\\RoomOpenGL\\wood.bmp";
+        private DressingTable m_DressingTable = new DressingTable();
+        private Window m_Window = new Window();
         private uint[] texture;
         Control p;
         float[,] floor = new float[3, 3];
@@ -911,70 +913,6 @@ namespace OpenGL
             GL.glPopMatrix();
         }
 
-        private void drawWindow()
-        {
-            float frameScaleX = 0.01f;
-            float frameScaleY = 0.3f;
-            float frameScaleZ = 0.01f;
-            float frameTranslationX = 5f;
-            float blindHeight = 0.6f;
-            float blindScaleX = 0.02f;
-            float blindScaleY = 0.24f;
-            float blindScaleZ = 0.01f;
-            int numberOfBlinds = 10;
-
-            GL.glPushMatrix();
-
-            GL.glRotatef(90f, 0.0f, 1f, 0.0f);
-            GL.glTranslatef(-12.0f, 8f, 0f);
-
-            // left side
-            GL.glPushMatrix();
-            GL.glScalef(frameScaleX, frameScaleY, frameScaleZ);
-            drawCube();
-            GL.glPopMatrix();
-
-            // right side
-            GL.glPushMatrix();
-            GL.glTranslatef(frameTranslationX, 00f, 0f);
-            GL.glScalef(frameScaleX, frameScaleY, frameScaleZ);
-            drawCube();
-            GL.glPopMatrix();
-
-            GL.glPopMatrix();
-
-            GL.glPushMatrix();
-
-            // down side
-            GL.glRotatef(90f, 1f, 0f, 0f);
-            GL.glTranslatef(0f, 9.5f, -5f);
-
-            GL.glPushMatrix();
-            GL.glScalef(blindScaleX, frameScaleY, frameScaleZ);
-            drawCube();
-            GL.glPopMatrix();
-
-            // upper side
-            GL.glPushMatrix();
-            GL.glTranslatef(0f, 0f, -6f);
-            GL.glScalef(blindScaleX, frameScaleY, frameScaleZ);
-            drawCube();
-            GL.glPopMatrix();
-
-            // Blinds
-            for (int i = 0; i < 10; i++)
-            {
-                GL.glTranslatef(0f, 0f, -blindHeight);
-
-                GL.glPushMatrix();
-                GL.glScalef(blindScaleX, blindScaleY, blindScaleZ);
-                drawCube();
-                GL.glPopMatrix();
-            }
-
-            GL.glPopMatrix();
-        }
-
         private void drawLamp()
         {
             GL.glPushMatrix();
@@ -1211,110 +1149,6 @@ namespace OpenGL
             GL.glPopMatrix();
         }
 
-        private void drawMirror(bool i_DrawWithTexturesAndColors)
-        {
-            //GL.glEnable(GL.GL_STENCIL_TEST);
-            //GL.glClear(GL.GL_STENCIL_BUFFER_BIT);
-
-            // Draw the mirror
-            //GL.glStencilFunc(GL.GL_ALWAYS, 1, 1);
-            //GL.glStencilOp(GL.GL_KEEP, GL.GL_KEEP, GL.GL_REPLACE);
-
-            GL.glPushMatrix();
-
-            if (i_DrawWithTexturesAndColors)
-            {
-                GL.glEnable(GL.GL_TEXTURE_2D);
-                GL.glBindTexture(GL.GL_TEXTURE_2D, texture[9]);
-            }
-
-            GL.glTranslatef(23.47f, 6.2f, 21.7f);
-            GL.glRotatef(90.0f, 0.0f, 0.0f, 1.0f);
-            GL.glScalef(0.28f, 0.001f, 0.20f);
-            drawCube();
-
-            if (i_DrawWithTexturesAndColors)
-            {
-                GL.glDisable(GL.GL_TEXTURE_2D);
-            }
-            
-            GL.glPopMatrix();
-
-            // Configure stencil buffer for reflection
-            //GL.glStencilFunc(GL.GL_EQUAL, 1, 1);
-            //GL.glStencilOp(GL.GL_KEEP, GL.GL_KEEP, GL.GL_KEEP);
-
-            // Draw the reflected object
-            //GL.glPushMatrix();
-            //GL.glScalef(1.0f, -1.0f, 1.0f); // Flip the object for reflection
-            //GL.glTranslatef(0.0f, -12.4f, 0.0f); // Adjust position for reflection
-            //drawCube(); // Example of reflected cube, color red
-            //GL.glPopMatrix();
-
-            //GL.glDisable(GL.GL_STENCIL_TEST);
-        }
-
-        private void drawDressingTable(bool i_DrawWithTexturesAndColors)
-        {
-            // mirror
-            drawMirror(i_DrawWithTexturesAndColors);
-
-            if (i_DrawWithTexturesAndColors)
-            {
-                GL.glColor3f(0.85f, 0.8f, 0.7f);
-
-                GL.glEnable(GL.GL_TEXTURE_2D);
-                GL.glBindTexture(GL.GL_TEXTURE_2D, texture[10]);
-            }
-
-            // table left leg
-            drawScaledCube(23.0f, 1.8f, 19.89f, 0.05f, 0.17f, 0.03f);
-
-            // table right leg
-            drawScaledCube(23.0f, 1.8f, 23.5f, 0.05f, 0.17f, 0.03f);
-
-            // table plate
-            drawScaledCube(23.0f, 3.5f, 21.7f, 0.05f, 0.016f, 0.21f);
-
-            // table upper panel
-            drawScaledCube(22.989f, 8.94f, 21.7f, 0.05f, 0.01f, 0.21f);
-
-            // table left panel
-            GL.glPushMatrix();
-            GL.glTranslatef(23.5f, 6.0f, 19.74f);
-            GL.glRotatef(90.0f, 1.0f, 0.0f, 0.0f);
-            GL.glScalef(0.001f, 0.008f, 0.29f);
-            drawCube();
-            GL.glPopMatrix();
-
-            // table right panel
-            GL.glPushMatrix();
-            GL.glTranslatef(23.48f, 6.0f, 23.78f);
-            GL.glRotatef(90.0f, 1.0f, 0.0f, 0.0f);
-            GL.glScalef(0.001f, 0.008f, 0.29f);
-            drawCube();
-            GL.glPopMatrix();
-
-            if (i_DrawWithTexturesAndColors)
-            {
-                GL.glDisable(GL.GL_TEXTURE_2D);
-            }
-
-            if (i_DrawWithTexturesAndColors)
-            {
-                GL.glEnable(GL.GL_TEXTURE_2D);
-                GL.glBindTexture(GL.GL_TEXTURE_2D, texture[11]);
-                GL.glColor3f(1.0f, 1.0f, 1.0f);
-            }
-
-            drawScaledCube(22.989f, 8.73f, 21.7f, 0.02f, 0.01f, 0.15f);
-
-            if (i_DrawWithTexturesAndColors)
-            {
-                GL.glDisable(GL.GL_TEXTURE_2D);
-            }
-        }
-
         private void drawFloorLamp(bool i_DrawWithTexturesAndColors)
         {
             // base of the lamp
@@ -1466,7 +1300,7 @@ namespace OpenGL
 
         private void DrawObjects(bool isForShades, int c)
         {
-            uint? clothesTexture = null, doorLeftTexture = null, doorRightTexture = null, drawerTexture = null;
+            uint? clothesTexture = null, doorLeftTexture = null, doorRightTexture = null, drawerTexture = null, tableTexture = null, mirrorTexture = null;
 
             if (isForShades)
             {
@@ -1481,13 +1315,16 @@ namespace OpenGL
                 doorLeftTexture = texture[5];
                 doorRightTexture = texture[8];
                 drawerTexture = texture[7];
+                tableTexture = texture[10];
+                mirrorTexture = texture[9];
             }
             
             drawBed(!isForShades);
             drawSphere(!isForShades);
             drawFloorLamp(!isForShades);
-            drawWindow();
-            drawDressingTable(!isForShades);
+
+            m_Window.Draw();
+            m_DressingTable.Draw(tableTexture, mirrorTexture);
 
             GL.glPushMatrix();
             GL.glTranslatef(15.0f, 0.5f, 0.0f);

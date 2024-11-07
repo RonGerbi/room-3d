@@ -1,6 +1,7 @@
 ﻿using OpenGL;
 using System;
 using System.Collections.Generic;
+using System.Drawing.Text;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
@@ -11,6 +12,7 @@ namespace myOpenGL
     {
         private int? m_SelectedDoorIdx = null;
         private List<SelectableObject> m_Selectables;
+        private List<IOpenCloseable> m_OpenClosables;
         private List<Door> m_Doors;
         private List<Drawer> m_Drawers;
 
@@ -20,6 +22,7 @@ namespace myOpenGL
             int numOfDrawers = 4;
             
             m_Selectables = new List<SelectableObject>(numOfDoors + numOfDrawers);
+            m_OpenClosables = new List<IOpenCloseable>();
             m_Doors = new List<Door>(numOfDoors) { new Door(eDoorSides.Left), new Door(eDoorSides.Right), new Door(eDoorSides.Left), new Door(eDoorSides.Right) };
             m_Drawers = new List<Drawer>(numOfDrawers);
 
@@ -31,6 +34,14 @@ namespace myOpenGL
             {
                 m_Drawers.Add(new Drawer());
                 m_Selectables.Add(m_Drawers[i]);
+            }
+
+            foreach (SelectableObject selectable in m_Selectables)
+            {
+                if (selectable is IOpenCloseable)
+                {
+                    m_OpenClosables.Add(selectable as IOpenCloseable);
+                }
             }
         }
 
@@ -83,7 +94,7 @@ namespace myOpenGL
         {
             if (m_SelectedDoorIdx != null)
             {
-                m_Selectables[m_SelectedDoorIdx.Value].Open();
+                (m_Selectables[m_SelectedDoorIdx.Value] as IOpenCloseable).Open();
             }
         }
 
@@ -91,7 +102,7 @@ namespace myOpenGL
         {
             if (m_SelectedDoorIdx != null)
             {
-                m_Selectables[m_SelectedDoorIdx.Value].Close();
+                (m_Selectables[m_SelectedDoorIdx.Value] as IOpenCloseable).Close();
             }
         }
 
@@ -99,7 +110,7 @@ namespace myOpenGL
         {
             foreach (SelectableObject selectable in m_Selectables)
             {
-                selectable.Open();
+                (selectable as IOpenCloseable).Open();
             }
         }
 
@@ -107,7 +118,7 @@ namespace myOpenGL
         {
             foreach (SelectableObject selectable in m_Selectables)
             {
-                selectable.Close();
+                (selectable as IOpenCloseable).Close();
             }
         }
 

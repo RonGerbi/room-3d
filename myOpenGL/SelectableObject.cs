@@ -32,8 +32,5 @@ namespace myOpenGL
         }
 
         public abstract void Draw(uint? i_Texture);
-
-        public abstract void Open();
-        public abstract void Close();
     }
 }

@@ -32,10 +32,7 @@ namespace myOpenGL
             float blindScaleZ = 0.01f;
             int numberOfBlinds = 10;
 
-            GL.glPushMatrix();
 
-            GL.glRotatef(90f, 0.0f, 1f, 0.0f);
-            GL.glTranslatef(-12.0f, 8f, 0f);
 
             // left side
             GL.glPushMatrix();
@@ -76,8 +73,6 @@ namespace myOpenGL
 
                 blind.Draw(blindScaleX, blindScaleY, blindScaleZ);
             }
-
-            GL.glPopMatrix();
         }
     }
 }

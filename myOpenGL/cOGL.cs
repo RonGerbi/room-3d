@@ -14,8 +14,11 @@ namespace OpenGL
     class cOGL
     {
         private readonly string r_TexturePath = "C:\\Users\\רון\\RoomOpenGL\\wood.bmp";
+        private Bed m_Bed = new Bed();
         private DressingTable m_DressingTable = new DressingTable();
         private Window m_Window = new Window();
+        private Lamp m_Lamp = new Lamp();
+        private Football m_Football = new Football();
         private uint[] texture;
         Control p;
         float[,] floor = new float[3, 3];
@@ -710,64 +713,6 @@ namespace OpenGL
             GL.glEnd();
         }
 
-        private void drawBed(bool i_DrawWithTexturesAndColors)
-        {
-            //bed head
-            if (i_DrawWithTexturesAndColors)
-            {
-                GL.glColor3f(1.0f, 1.0f, 1.0f);
-                GL.glEnable(GL.GL_TEXTURE_2D);
-                GL.glBindTexture(GL.GL_TEXTURE_2D, texture[2]);
-            }
-
-            GL.glPushMatrix();
-            GL.glTranslatef(5.0f, 2.15f, 0.5f);
-
-            drawScaledTranslatedCube(-4f, -0.49f, 6.2f, 0.05f, 0.16f, 0.5f);
-
-            if (i_DrawWithTexturesAndColors) 
-            {
-                GL.glDisable(GL.GL_TEXTURE_2D);
-            }
-
-            //bed body
-            if (i_DrawWithTexturesAndColors)
-            {
-                GL.glEnable(GL.GL_TEXTURE_2D);
-                GL.glBindTexture(GL.GL_TEXTURE_2D, texture[2]);
-            }
-            
-            drawScaledTranslatedCube(0f, -1.1f, 6.2f, 0.4f, 0.1f, 0.5f);
-
-            if (i_DrawWithTexturesAndColors)
-            {
-                GL.glDisable(GL.GL_TEXTURE_2D);
-            }
-
-            drawPillow(-2.8f, 0.68f, 3.8f, 40f, i_DrawWithTexturesAndColors);
-            drawPillow(-2.8f, 0.68f, 8.8f, 40f, i_DrawWithTexturesAndColors);
-
-            //blanket
-            if (i_DrawWithTexturesAndColors)
-            {
-                GL.glColor3f(0.627f, 0.322f, 0.176f);
-                GL.glEnable(GL.GL_TEXTURE_2D);
-                GL.glBindTexture(GL.GL_TEXTURE_2D, texture[3]);
-            }
-
-            GL.glPushMatrix();
-            GL.glTranslatef(1.51f, -0.15f, 6.15f);
-            GL.glScalef(0.25f, 0.025f, 0.51f);
-            drawCube();
-            GL.glPopMatrix();
-
-            GL.glPopMatrix();
-            if (i_DrawWithTexturesAndColors)
-            {
-                GL.glDisable(GL.GL_TEXTURE_2D);
-            }
-        }
-
         private void drawScaledTranslatedCube(float x, float y, float z, float scaleX, float scaleY, float scaleZ)
         {
             GL.glPushMatrix();
@@ -775,28 +720,6 @@ namespace OpenGL
             GL.glScalef(scaleX, scaleY, scaleZ);
             drawCube();
             GL.glPopMatrix();
-        }
-
-        private void drawPillow(float x, float y, float z, float rotationAngle, bool i_DrawWithTexturesAndColors)
-        {
-            if (i_DrawWithTexturesAndColors)
-            {
-                GL.glColor3f(0.627f, 0.322f, 0.176f);
-                GL.glEnable(GL.GL_TEXTURE_2D);
-                GL.glBindTexture(GL.GL_TEXTURE_2D, texture[4]);
-            }
-
-            GL.glPushMatrix();
-            GL.glTranslatef(x, y, z);
-            GL.glRotatef(rotationAngle, 0f, 0f, 1f);
-            GL.glScalef(0.025f, 0.08f, 0.2f);
-            drawCube();
-            GL.glPopMatrix();
-
-            if (i_DrawWithTexturesAndColors)
-            {
-                GL.glDisable(GL.GL_TEXTURE_2D);
-            }
         }
 
         private void drawCloset()
@@ -1052,33 +975,6 @@ namespace OpenGL
             vector[2] /= length; // Z-component
         }
 
-        private void drawSphere(bool i_DrawWithTexturesAndColors)
-        {
-            GLUquadric obj;
-            obj = GLU.gluNewQuadric();
-
-            if (i_DrawWithTexturesAndColors)
-            {
-                GL.glEnable(GL.GL_TEXTURE_2D);
-                GL.glBindTexture(GL.GL_TEXTURE_2D, texture[1]);
-                GL.glColor3f(1.0f, 1.0f, 1.0f);
-            }
-
-            GLU.gluQuadricTexture(obj, (byte)GL.GL_TRUE);
-            GL.glPushMatrix();
-            GL.glTranslatef(1.5f, 0.60f, 15f);
-            GL.glRotatef(120.0f, 0.0f, 1.0f, 0.0f);
-            GLU.gluSphere(obj, 0.6, 80, 80);
-            GL.glPopMatrix();
-
-            if (i_DrawWithTexturesAndColors)
-            {
-                GL.glDisable(GL.GL_TEXTURE_2D);
-            }
-
-            GLU.gluDeleteQuadric(obj);
-        }
-
         private void drawShelves(ref float i_ShelfHeightDelta)
         {
             for (int i = 0; i < 5; i++)
@@ -1149,112 +1045,6 @@ namespace OpenGL
             GL.glPopMatrix();
         }
 
-        private void drawFloorLamp(bool i_DrawWithTexturesAndColors)
-        {
-            // base of the lamp
-            
-            GLUquadric obj = GLU.gluNewQuadric();
-
-            if (i_DrawWithTexturesAndColors)
-            {
-                GL.glColor3f(0.78f, 0.78f, 0.78f);
-            }
-
-            GL.glPushMatrix();
-            GL.glTranslatef(22.8f, 0.5f, 16.0f);
-            GL.glRotatef(90.0f, 1.0f, 0.0f, 0.0f);
-            GLU.gluDisk(obj, 0.0, 1.0, 50, 50);
-            GLU.gluCylinder(obj, 1.0, 1.0, 0.3, 50, 50);
-            GL.glPopMatrix();
-
-            // column of the lamp
-
-            GL.glPushMatrix();
-            GL.glTranslatef(22.8f, 8.1f, 16.0f);
-            GL.glRotatef(90.0f, 1.0f, 0.0f, 0.0f);
-            GLU.gluDisk(obj, 0.5, 0.5, 200, 200);
-            GLU.gluCylinder(obj, 0.05, 0.05, 7.7, 20, 20);
-            GL.glPopMatrix();
-
-            // lamp shade
-            if (i_DrawWithTexturesAndColors)
-            {
-                GL.glColor3f(1.0f, 0.8f, 0.6f);
-            }
-
-            GL.glPushMatrix();
-            GL.glTranslatef(22.8f, 8.1f, 16.0f);
-            GLU.gluCylinder(obj, 1.0f, 0.0f, 1.0f, 30, 30);
-            GL.glPopMatrix();
-
-            // light bulb
-            if (i_DrawWithTexturesAndColors)
-            {
-                GL.glColor3f(1.0f, 1.0f, 0.8f);
-            }
-
-            GL.glPushMatrix();
-            GL.glTranslatef(22.8f, 8.1f, 15.0f);
-
-            GLU.gluSphere(obj, 0.1, 20, 20);
-            GL.glPopMatrix();
-
-            GLU.gluDeleteQuadric(obj);
-        }
-
-        private void drawDynamicLeftDoor(bool isDoorOpen, bool i_DrawWithTexturesAndColors)
-        {
-            if (!isDoorOpen)
-            {
-                doorAngle = doorAngle >= 0.0f ? doorAngle - 2.0f : doorAngle;
-
-                if (i_DrawWithTexturesAndColors)
-                {
-                    GL.glEnable(GL.GL_TEXTURE_2D);
-                    GL.glBindTexture(GL.GL_TEXTURE_2D, texture[5]);
-                }
-
-                GL.glPushMatrix();
-                GL.glTranslatef(-1f, 0f, 0f);
-                GL.glRotatef(-doorAngle, 0.0f, 1.0f, 0.0f);
-                GL.glTranslatef(1f, 0f, 0f);
-                GL.glScalef(0.105f, 0.376f, 0.005f);
-                drawCube();
-                GL.glPopMatrix();
-
-                if (i_DrawWithTexturesAndColors)
-                {
-                    GL.glDisable(GL.GL_TEXTURE_2D);
-                }
-            }
-
-            else
-            {
-                doorAngle = doorAngle <= 90f ? doorAngle + 2.0f : doorAngle;
-
-                if (i_DrawWithTexturesAndColors)
-                {
-                    GL.glEnable(GL.GL_TEXTURE_2D);
-                    GL.glBindTexture(GL.GL_TEXTURE_2D, texture[5]);
-                }
-
-                GL.glPushMatrix();
-                GL.glTranslatef(-1f, 0f, 0f);
-                GL.glRotatef(doorAngle, 0.0f, -1.0f, 0.0f);
-                GL.glTranslatef(1f, 0f, 0f);
-                GL.glScalef(0.105f, 0.376f, 0.005f);
-
-                drawCube();
-                
-                GL.glPopMatrix();
-
-                if (i_DrawWithTexturesAndColors)
-                {
-                    GL.glDisable(GL.GL_TEXTURE_2D);
-                }
-            }
-        }
-
         private void drawClothes()
         {
             float height = 6.20f;
@@ -1300,7 +1090,9 @@ namespace OpenGL
 
         private void DrawObjects(bool isForShades, int c)
         {
-            uint? clothesTexture = null, doorLeftTexture = null, doorRightTexture = null, drawerTexture = null, tableTexture = null, mirrorTexture = null;
+            uint? clothesTexture = null, doorLeftTexture = null, doorRightTexture = null,
+                drawerTexture = null, tableTexture = null, mirrorTexture = null,
+                footballTexture = null, bedTexture = null, pillowTexture = null, blanketTexture = null;
 
             if (isForShades)
             {
@@ -1317,13 +1109,43 @@ namespace OpenGL
                 drawerTexture = texture[7];
                 tableTexture = texture[10];
                 mirrorTexture = texture[9];
+                footballTexture = texture[1];
+                bedTexture = texture[2];
+                pillowTexture = texture[4];
+                blanketTexture = texture[3];
             }
-            
-            drawBed(!isForShades);
-            drawSphere(!isForShades);
-            drawFloorLamp(!isForShades);
+
+            GL.glPushMatrix();
+            GL.glTranslatef(5.0f, 2.15f, 0.5f);
+
+            m_Bed.Draw(bedTexture, pillowTexture, blanketTexture);
+
+            GL.glPopMatrix();
+
+            GL.glPushMatrix();
+            GL.glTranslatef(1.5f, 0.60f, 15f);
+            GL.glRotatef(120.0f, 0.0f, 1.0f, 0.0f);
+
+            m_Football.Draw(footballTexture);
+
+            GL.glPopMatrix();
+
+            GL.glPushMatrix();
+            GL.glTranslatef(22.8f, 0.5f, 16.0f);
+
+            m_Lamp.Draw(!isForShades);
+
+            GL.glPopMatrix();
+
+            GL.glPushMatrix();
+
+            GL.glRotatef(90f, 0.0f, 1f, 0.0f);
+            GL.glTranslatef(-12.0f, 8f, 0f);
 
             m_Window.Draw();
+
+            GL.glPopMatrix();
+
             m_DressingTable.Draw(tableTexture, mirrorTexture);
 
             GL.glPushMatrix();

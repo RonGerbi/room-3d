@@ -6,7 +6,7 @@ using System.Text;
 
 namespace myOpenGL
 {
-    public class Door : SelectableObject
+    public class Door : SelectableObject, IOpenCloseable
     {
         private const float k_ClosedAngle = 0f;
         private const float k_OpenAngle = 90f;
@@ -88,12 +88,12 @@ namespace myOpenGL
             }
         }
 
-        public override void Open()
+        void IOpenCloseable.Open()
         {
             MoveToAngle = k_OpenAngle;
         }
 
-        public override void Close()
+        void IOpenCloseable.Close()
         {
             MoveToAngle = k_ClosedAngle;
         }

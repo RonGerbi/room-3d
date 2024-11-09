@@ -10,9 +10,8 @@ namespace myOpenGL
 {
     public class Closet
     {
-        private int? m_SelectedDoorIdx = null;
+        private int? m_SelectedIdx = null;
         private List<SelectableObject> m_Selectables;
-        private List<IOpenCloseable> m_OpenClosables;
         private List<Door> m_Doors;
         private List<Drawer> m_Drawers;
 
@@ -22,7 +21,6 @@ namespace myOpenGL
             int numOfDrawers = 4;
             
             m_Selectables = new List<SelectableObject>(numOfDoors + numOfDrawers);
-            m_OpenClosables = new List<IOpenCloseable>();
             m_Doors = new List<Door>(numOfDoors) { new Door(eDoorSides.Left), new Door(eDoorSides.Right), new Door(eDoorSides.Left), new Door(eDoorSides.Right) };
             m_Drawers = new List<Drawer>(numOfDrawers);
 
@@ -30,39 +28,32 @@ namespace myOpenGL
             {
                 m_Selectables.Add(door);
             }
+
             for (int i = 0; i < numOfDrawers; i++)
             {
                 m_Drawers.Add(new Drawer());
                 m_Selectables.Add(m_Drawers[i]);
             }
-
-            foreach (SelectableObject selectable in m_Selectables)
-            {
-                if (selectable is IOpenCloseable)
-                {
-                    m_OpenClosables.Add(selectable as IOpenCloseable);
-                }
-            }
         }
 
         public void SwitchSelectedObject()
         {
-            if (m_SelectedDoorIdx == null)
+            if (m_SelectedIdx == null)
             {
-                m_SelectedDoorIdx = 0;
+                m_SelectedIdx = 0;
             }
             else
             {
-                m_Selectables[m_SelectedDoorIdx.Value].Select = false;
-                m_SelectedDoorIdx = (m_SelectedDoorIdx + 1) % m_Selectables.Count;
+                m_Selectables[m_SelectedIdx.Value].Select = false;
+                m_SelectedIdx = (m_SelectedIdx + 1) % m_Selectables.Count;
             }
 
-            m_Selectables[m_SelectedDoorIdx.Value].Select = true;
+            m_Selectables[m_SelectedIdx.Value].Select = true;
         }
 
         public void UnselectObjects()
         {
-            m_SelectedDoorIdx = null;
+            m_SelectedIdx = null;
 
             foreach (SelectableObject selectable in m_Selectables)
             {
@@ -92,17 +83,17 @@ namespace myOpenGL
 
         public void OpenSelectedObject()
         {
-            if (m_SelectedDoorIdx != null)
+            if (m_SelectedIdx != null && m_Selectables[m_SelectedIdx.Value] is IOpenCloseable openable)
             {
-                (m_Selectables[m_SelectedDoorIdx.Value] as IOpenCloseable).Open();
+                openable.Open();
             }
         }
 
         public void CloseSelectedObject()
         {
-            if (m_SelectedDoorIdx != null)
+            if (m_SelectedIdx != null && m_Selectables[m_SelectedIdx.Value] is IOpenCloseable openable)
             {
-                (m_Selectables[m_SelectedDoorIdx.Value] as IOpenCloseable).Close();
+                openable.Close();
             }
         }
 
@@ -110,7 +101,10 @@ namespace myOpenGL
         {
             foreach (SelectableObject selectable in m_Selectables)
             {
-                (selectable as IOpenCloseable).Open();
+                if (selectable is IOpenCloseable openable)
+                {
+                    openable.Open();
+                }
             }
         }
 
@@ -118,7 +112,10 @@ namespace myOpenGL
         {
             foreach (SelectableObject selectable in m_Selectables)
             {
-                (selectable as IOpenCloseable).Close();
+                if (selectable is IOpenCloseable openable)
+                {
+                    openable.Close();
+                }
             }
         }
 

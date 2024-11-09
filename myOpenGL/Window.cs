@@ -5,7 +5,7 @@ using System.Text;
 
 namespace myOpenGL
 {
-    public class Window
+    public class Window : SelectableObject
     {
         private const int k_BlindsCount = 10;
         List<Blind> m_Blinds;
@@ -20,7 +20,7 @@ namespace myOpenGL
             }
         }
 
-        public void Draw()
+        public override void Draw(uint? i_Texture)
         {
             float frameScaleX = 0.01f;
             float frameScaleY = 0.3f;
@@ -31,8 +31,6 @@ namespace myOpenGL
             float blindScaleY = 0.24f;
             float blindScaleZ = 0.01f;
             int numberOfBlinds = 10;
-
-
 
             // left side
             GL.glPushMatrix();

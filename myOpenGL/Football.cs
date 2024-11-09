@@ -1,7 +1,4 @@
 ﻿using OpenGL;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace myOpenGL
 {
@@ -9,7 +6,7 @@ namespace myOpenGL
     {
         public Football() { }
 
-        public void Draw(uint? i_Texture)
+        public override void Draw(uint? i_Texture)
         {
             GLUquadric obj;
             obj = GLU.gluNewQuadric();
@@ -30,11 +27,6 @@ namespace myOpenGL
             }
 
             GLU.gluDeleteQuadric(obj);
-        }
-
-        public override void Draw(uint? i_Texture)
-        {
-            throw new NotImplementedException();
         }
     }
 }

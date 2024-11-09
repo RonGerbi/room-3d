@@ -6,7 +6,7 @@ using System.Text;
 
 namespace myOpenGL
 {
-    public class Drawer : SelectableObject
+    public class Drawer : SelectableObject, IOpenCloseable
     {
         private const float k_ZPosClose = 0f;
         private const float k_ZPosOpen = 3f;
@@ -68,12 +68,12 @@ namespace myOpenGL
             }
         }
 
-        public override void Open()
+        void IOpenCloseable.Open()
         {
             m_ToZPos = k_ZPosOpen;
         }
 
-        public override void Close()
+        void IOpenCloseable.Close()
         {
             m_ToZPos = k_ZPosClose;
         }

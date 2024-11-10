@@ -35,10 +35,33 @@ namespace myOpenGL
 
         private void panel1_Paint(object sender, PaintEventArgs e)
         {
+<<<<<<< Updated upstream
             cGL.Draw();
             
             //panel1.BorderStyle==None !! provides an exact half-height views
                                     //!!!!!! 
+=======
+            e.Handled = true;
+
+            switch (char.ToUpper(e.KeyChar))
+            {
+                case 'P':
+                    cGL.isCeilingLightBulbOn = !cGL.isCeilingLightBulbOn;
+                    break;
+                case 'L':
+                    cGL.applyShadows = !cGL.applyShadows;
+                    break;
+                case 'O':
+                    cGL.isDoorOpen = !cGL.isDoorOpen;
+                    break;
+                case 'B':
+                    cGL.ballInRight = !cGL.ballInRight;
+                    break;
+                case 'F':
+                    cGL.fishbool = !cGL.fishbool;
+                    break;
+            }
+>>>>>>> Stashed changes
         }
 
         private void panel1_Resize(object sender, EventArgs e)

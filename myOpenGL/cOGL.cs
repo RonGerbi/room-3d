@@ -10,11 +10,22 @@ namespace OpenGL
 {
     class cOGL
     {
-        private readonly string r_TexturePath = "C:\\Users\\רון\\RoomOpenGL\\wood.bmp";
         private uint[] texture;
         Control p;
         float[,] floor = new float[3, 3];
         float[] lightPos = new float[4];
+<<<<<<< Updated upstream
+=======
+        public float doorAngle = 0.0f;
+        public float ballAngle = 0.0f;
+        public float fishAngle = 0.0f;
+        public bool isDoorOpen = false;
+        public bool fishbool = false;
+        public bool isCeilingLightBulbOn = false;
+        public bool applyShadows = false;
+        public bool ballInRight = false;
+        public bool doorFlag = false;
+>>>>>>> Stashed changes
         int Width;
         int Height;
 
@@ -67,7 +78,6 @@ namespace OpenGL
         {
             get { return m_uint_RC; }
         }
-
 
         void DrawOldAxes()
         {
@@ -352,7 +362,14 @@ namespace OpenGL
         {
             GL.glEnable(GL.GL_TEXTURE_2D);
 
+<<<<<<< Updated upstream
             texture = new uint[2];		// storage for texture
+=======
+            string[] imageFiles = { "wood.bmp", "soccer_ball.bmp", "bed_body.bmp", "blanket.bmp", "Pillow.bmp",
+          "door.bmp", "closet.bmp", "drawers.bmp", "doors_right.bmp", "mirror.bmp", "dressingTable.bmp",
+          "LED.bmp", "clothes.bmp", "jeans.bmp" , "aqua_table.bmp", "aqua_bottom.bmp","aqua_back2.bmp",
+          "closet_poster2.bmp", "water_proof.bmp", "bed_pannel.bmp"};
+>>>>>>> Stashed changes
 
             Bitmap image = new Bitmap(imageBMPfile);
             image.RotateFlip(RotateFlipType.RotateNoneFlipY); //Y axis in Windows is directed downwards, while in OpenGL-upwards
@@ -548,7 +565,7 @@ namespace OpenGL
         private void drawCube()
         {
             GL.glBegin(GL.GL_QUADS);
-            //GL.glBindTexture(GL.GL_TEXTURE_2D, texture[1]);
+
             //front
             GL.glNormal3f(0.0f, 0.0f, 1.0f);
             GL.glTexCoord2f(0.0f, 0.0f);
@@ -561,6 +578,11 @@ namespace OpenGL
             GL.glVertex3f(-10.0f, 10.0f, 10.0f);
 
             //back
+            //if (doorFlag)
+            //{
+            //    GL.glColor3f(1.0f, 1.0f, 1.0f);
+            //    doorFlag = false;
+            //}
             GL.glNormal3f(0.0f, 0.0f, -1.0f);
             GL.glTexCoord2f(0.0f, 0.0f);
             GL.glVertex3f(-10.0f, -10.0f, -10.0f);
@@ -590,6 +612,7 @@ namespace OpenGL
             GL.glVertex3f(-10.0f, -10.0f, -10.0f);
             GL.glTexCoord2f(0.0f, 1.0f);
             GL.glVertex3f(-10.0f, -10.0f, 10.0f);
+
             //right
             GL.glNormal3f(1.0f, 0.0f, 0.0f);
             GL.glTexCoord2f(0.0f, 0.0f);
@@ -600,6 +623,7 @@ namespace OpenGL
             GL.glVertex3f(10.0f, 10.0f, -10.0f);
             GL.glTexCoord2f(0.0f, 1.0f);
             GL.glVertex3f(10.0f, 10.0f, 10.0f);
+
             //left
             GL.glNormal3f(-1.0f, 0.0f, -1.0f);
             GL.glTexCoord2f(0.0f, 0.0f);
@@ -619,6 +643,7 @@ namespace OpenGL
             //bed head
             GL.glPushMatrix();
             GL.glTranslatef(5.0f, 2.15f, 0.5f);
+<<<<<<< Updated upstream
             GL.glPushMatrix(); // Save the mat state
             GL.glTranslatef(-4f, -0.49f, 6.2f); // Change the position of the object by adding values ​​to the axes(x,y,z).
             GL.glScalef(0.05f, 0.16f, 0.5f); // Change the object size. scale(2,2,2) make it bigger twice
@@ -629,13 +654,109 @@ namespace OpenGL
             GL.glPushMatrix();
             GL.glTranslatef(0f, -1.1f, 6.2f);
             GL.glScalef(0.4f, 0.1f, 0.5f); //1, 0.2, 0.9
+=======
+
+            drawScaledTranslatedCube(-4f, -0.49f, 6.2f, 0.05f, 0.16f, 0.5f);
+
+            if (i_DrawWithTexturesAndColors)
+            {
+                GL.glDisable(GL.GL_TEXTURE_2D);
+            }
+
+            //bed body
+            if (i_DrawWithTexturesAndColors)
+            {
+                GL.glEnable(GL.GL_TEXTURE_2D);
+                GL.glBindTexture(GL.GL_TEXTURE_2D, texture[2]);
+            }
+
+            drawScaledTranslatedCube(0f, -1.1f, 6.2f, 0.4f, 0.1f, 0.5f);
+
+            if (i_DrawWithTexturesAndColors)
+            {
+                GL.glDisable(GL.GL_TEXTURE_2D);
+            }
+
+            // bed panel
+            // front
+            GL.glEnable(GL.GL_TEXTURE_2D);
+            GL.glBindTexture(GL.GL_TEXTURE_2D, texture[19]);
+            GL.glPushMatrix();
+            GL.glTranslatef(-0.23f, -1.3f, 11.2f);
+            GL.glRotatef(90.0f, 1.0f, 0.0f, 0.0f);
+            GL.glScalef(0.426f, 0.001f, 0.084f); //0.425f
+            drawCube();
+            GL.glPopMatrix();
+
+            // back
+            GL.glPushMatrix();
+            GL.glTranslatef(-0.26f, -1.3f, 1.2f);
+            GL.glRotatef(90.0f, 1.0f, 0.0f, 0.0f);
+            GL.glScalef(0.425f, 0.001f, 0.084f);
+            drawCube();
+            GL.glPopMatrix();
+
+            // right
+            GL.glPushMatrix();
+            GL.glTranslatef(4.01f, -1.3f, 6.2f);
+            GL.glRotatef(90.0f, 0.0f, 0.0f, 1.0f);
+            GL.glScalef(0.0843f, 0.001f, 0.501f);
+            drawCube();
+            GL.glPopMatrix();
+
+            //left
+            GL.glPushMatrix();
+            GL.glTranslatef(-4.499f, -1.3f, 6.2f);
+            GL.glRotatef(90.0f, 0.0f, 0.0f, 1.0f);
+            GL.glScalef(0.0843f, 0.001f, 0.501f);
+            drawCube();
+            GL.glPopMatrix();
+            GL.glDisable(GL.GL_TEXTURE_2D);
+
+            drawPillow(-2.8f, 0.68f, 3.8f, 40f, i_DrawWithTexturesAndColors);
+            drawPillow(-2.8f, 0.68f, 8.8f, 40f, i_DrawWithTexturesAndColors);
+
+            //blanket
+            if (i_DrawWithTexturesAndColors)
+            {
+                GL.glColor3f(1.0f, 0.98f, 0.8f);
+                GL.glEnable(GL.GL_TEXTURE_2D);
+                GL.glBindTexture(GL.GL_TEXTURE_2D, texture[3]);
+            }
+
+            GL.glPushMatrix();
+            GL.glTranslatef(1.51f, -0.15f, 6.20f);
+            GL.glScalef(0.25f, 0.015f, 0.5f);
+>>>>>>> Stashed changes
             drawCube();
             GL.glPopMatrix();
 
             //pillow right far
             GL.glPushMatrix();
+<<<<<<< Updated upstream
             GL.glTranslatef(-2.8f, 0.68f, 3.8f);
             GL.glRotatef(40f, 0f, 0f, 1f);
+=======
+            GL.glTranslatef(x, y, z);
+            GL.glScalef(scaleX, scaleY, scaleZ);
+            drawCube();
+            GL.glPopMatrix();
+        }
+
+        private void drawPillow(float x, float y, float z, float rotationAngle, bool i_DrawWithTexturesAndColors)
+        {
+            if (i_DrawWithTexturesAndColors)
+            {
+                //GL.glColor3f(0.627f, 0.322f, 0.176f);
+                GL.glColor3f(0.95f, 0.95f, 0.95f);
+                GL.glEnable(GL.GL_TEXTURE_2D);
+                GL.glBindTexture(GL.GL_TEXTURE_2D, texture[4]);
+            }
+
+            GL.glPushMatrix();
+            GL.glTranslatef(x, y, z);
+            GL.glRotatef(rotationAngle, 0f, 0f, 1f);
+>>>>>>> Stashed changes
             GL.glScalef(0.025f, 0.08f, 0.2f);
             drawCube();
             GL.glPopMatrix();
@@ -663,7 +784,7 @@ namespace OpenGL
             GL.glPushMatrix();
             GL.glTranslatef(15.0f, 0.5f, 0.0f);
             GL.glScalef(1.5f, 1.5f, 1.2f);
-            
+
             float shelfHeightDelta = 0.0f;
 
             for (int i = 0; i < 5; i++)
@@ -760,14 +881,14 @@ namespace OpenGL
             GL.glPopMatrix();
 
             //back side
-            
+
             GL.glPushMatrix();
             GL.glRotatef(90.0f, 0.0f, 1.0f, 0.0f);
             GL.glTranslatef(-1.0f, 5.0f, 1.5f);
             GL.glScalef(0.001f, 0.53f, 0.4f);
             drawCube();
             GL.glPopMatrix();
-            
+
 
             GL.glPopMatrix();
         }
@@ -839,16 +960,16 @@ namespace OpenGL
             GL.glEnable(GL.GL_BLEND);
 
             GL.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
-            GL.glColor4f(1.0f, 1.0f, 1.0f, 0.5f);
+            GL.glColor4f(1.0f, 1.0f, 0.0f, 0.5f);
 
             GLU.gluSphere(obj, 0.2, 20, 20);
             GL.glDisable(GL.GL_BLEND);
 
-            GL.glColor3f(0f, 0f, 0f);
+
+            GL.glColor3f(0.15f, 0.15f, 0.15f);          
             GL.glTranslatef(0f, 0.1f, 0f);
             GL.glRotatef(-90f, 1f, 0f, 0f);
             GLU.gluCylinder(obj, 0.2, 0.3, 0.6, 20, 20);
-
             GLU.gluDeleteQuadric(obj);
             GL.glPopMatrix();
 
@@ -868,7 +989,6 @@ namespace OpenGL
             GL.glPopMatrix(); // Restore matrix after drawing light source
 
             // Projection line from source to plane
-            GL.glBegin(GL.GL_LINES);
             GL.glColor3d(0.5, 0.5, 0);
             GL.glVertex3d(lightPos[0], floor[0, 1] - 0.01, lightPos[2]);
             GL.glVertex3d(lightPos[0], lightPos[1], lightPos[2]);
@@ -970,6 +1090,742 @@ namespace OpenGL
             vector[2] /= length; // Z-component
         }
 
+<<<<<<< Updated upstream
+=======
+        private void drawSphere(bool i_DrawWithTexturesAndColors)
+        {
+            GLUquadric obj;
+            obj = GLU.gluNewQuadric();
+
+            if (i_DrawWithTexturesAndColors)
+            {
+                GL.glEnable(GL.GL_TEXTURE_2D);
+                GL.glBindTexture(GL.GL_TEXTURE_2D, texture[1]);
+                GL.glColor3f(1.0f, 1.0f, 1.0f);
+            }
+
+            GL.glDisable(GL.GL_LIGHTING);
+            GLU.gluQuadricTexture(obj, (byte)GL.GL_TRUE);
+            GL.glPushMatrix();
+            GL.glTranslatef(2.8f, 0.60f, 15f);
+            GL.glRotatef(120.0f, 0.0f, 1.0f, 0.0f);
+
+            if (!ballInRight)
+            {
+                ballAngle = Math.Min(ballAngle + 6.0f, 0.0f);
+            }
+
+            else
+            {
+                ballAngle = Math.Max(ballAngle - 6.0f, -360.0f);
+            }
+
+            GL.glRotatef(ballAngle, 0.0f, 0.0f, 1.0f);
+            GLU.gluSphere(obj, 0.6, 80, 80);
+            GL.glPopMatrix();
+
+            if (i_DrawWithTexturesAndColors)
+            {
+                GL.glDisable(GL.GL_TEXTURE_2D);
+            }
+
+            GLU.gluDeleteQuadric(obj);
+        }
+  
+        private void drawCloset(bool i_DrawWithTexturesAndColors)
+        {
+            if (i_DrawWithTexturesAndColors)
+            {
+                drawClothes();
+            }
+
+            GL.glPushMatrix();
+            GL.glTranslatef(15.0f, 0.5f, 0.0f);
+            GL.glScalef(1.5f, 1.5f, 1.2f);
+
+            float shelfHeightDelta = 0.0f;
+
+            if (i_DrawWithTexturesAndColors)
+            {
+                GL.glColor3f(0.8f, 0.8f, 0.8f);
+            }
+
+            drawShelves(ref shelfHeightDelta);
+            drawDrawers(i_DrawWithTexturesAndColors);
+            drawDoors(i_DrawWithTexturesAndColors);
+            drawClosetSides(i_DrawWithTexturesAndColors);
+
+            GL.glPopMatrix();
+        }
+
+        private void drawShelves(ref float i_ShelfHeightDelta)
+        {
+            for (int i = 0; i < 5; i++)
+            {
+                GL.glPushMatrix();
+                GL.glTranslatef(1.5f, i_ShelfHeightDelta, 3.0f);
+                GL.glScalef(0.4f, 0.03f, 0.2f);
+                drawCube();
+                GL.glPopMatrix();
+
+                i_ShelfHeightDelta += 2.5f;
+            }
+        }
+
+        private void drawDrawers(bool i_DrawWithTexturesAndColors)
+        {
+            float drawerXDelta = -2.43f;
+
+            for (int i = 0; i < 4; i++)
+            {
+                // drawer
+                GL.glPushMatrix();
+                GL.glTranslatef(drawerXDelta, 1.0f, 3.0f);
+
+                drawDrawerSides();
+                drawDrawerBottom();
+                drawDrawerFront(i_DrawWithTexturesAndColors);
+
+                GL.glPopMatrix();
+
+                drawerXDelta += 1.99f;
+            }
+        }
+
+        private void drawDrawerSides()
+        {
+            drawScaledCube(0.0f, 0.25f, 0.0f, 0.005f, 0.095f, 0.2f);
+            drawScaledCube(1.9f, 0.25f, 0.0f, 0.005f, 0.095f, 0.2f);
+        }
+
+        private void drawDrawerBottom()
+        {
+            drawScaledCube(0.95f, -0.63f, 0.0f, 0.088f, 0.005f, 0.2f);
+        }
+
+        private void drawDrawerFront(bool i_DrawWithTexturesAndColors)
+        {
+            if (i_DrawWithTexturesAndColors)
+            {
+                GL.glEnable(GL.GL_TEXTURE_2D);
+                GL.glBindTexture(GL.GL_TEXTURE_2D, texture[7]);
+            }
+
+            drawScaledCube(0.95f, 0.2f, 2.02f, 0.1f, 0.15f, 0.001f);
+
+            if (i_DrawWithTexturesAndColors)
+            {
+                GL.glDisable(GL.GL_TEXTURE_2D);
+            }
+        }
+
+        private void drawDoors(bool i_DrawWithTexturesAndColors)
+        {
+            GL.glPushMatrix();
+            GL.glTranslatef(-0.5f, 0f, 2.02f);
+
+            // left door
+            drawDynamicLeftDoor(isDoorOpen, i_DrawWithTexturesAndColors);
+
+            // right door
+            if (i_DrawWithTexturesAndColors)
+            {
+                GL.glEnable(GL.GL_TEXTURE_2D);
+                GL.glBindTexture(GL.GL_TEXTURE_2D, texture[5]);
+            }
+
+            drawScaledCube(2.95f, 6.51f, 3.0f, 0.105f, 0.376f, 0.005f);
+
+            if (i_DrawWithTexturesAndColors)
+            {
+                GL.glDisable(GL.GL_TEXTURE_2D);
+            }
+
+            GL.glTranslatef(2f, 0.0f, 0.0f);
+
+            // left door
+            if (i_DrawWithTexturesAndColors)
+            {
+                GL.glEnable(GL.GL_TEXTURE_2D);
+                GL.glBindTexture(GL.GL_TEXTURE_2D, texture[8]);
+            }
+
+            drawScaledCube(-0.96f, 6.51f, 3.0f, 0.105f, 0.376f, 0.005f);
+
+            if (i_DrawWithTexturesAndColors)
+            {
+                GL.glDisable(GL.GL_TEXTURE_2D);
+            }
+
+            // right door
+            if (i_DrawWithTexturesAndColors)
+            {
+                GL.glEnable(GL.GL_TEXTURE_2D);
+                GL.glBindTexture(GL.GL_TEXTURE_2D, texture[8]);
+            }
+
+            drawScaledCube(2.95f, 6.51f, 3.0f, 0.105f, 0.376f, 0.005f);
+
+            if (i_DrawWithTexturesAndColors)
+            {
+                GL.glDisable(GL.GL_TEXTURE_2D);
+            }
+
+            GL.glPopMatrix();
+        }
+
+        private void drawClosetSides(bool i_DrawWithTexturesAndColors)
+        {
+            if (i_DrawWithTexturesAndColors)
+            {
+                GL.glColor3f(0.8f, 0.8f, 0.8f);
+            }
+
+            // left side
+            drawScaledCube(-2.5f, 5.0f, 3f, 0.001f, 0.53f, 0.2f);
+
+            // right side
+            drawScaledCube(5.5f, 5.0f, 3f, 0.001f, 0.53f, 0.2f);
+
+            //back side
+            GL.glPushMatrix();
+            GL.glRotatef(90.0f, 0.0f, 1.0f, 0.0f);
+            GL.glTranslatef(-1.0f, 5.0f, 1.5f);
+            GL.glScalef(0.001f, 0.53f, 0.4f);
+            drawCube();
+            GL.glPopMatrix();
+        }
+
+        private void drawScaledCube(float i_X, float i_Y, float i_Z, float i_ScaleX, float i_ScaleY, float i_ScaleZ)
+        {
+            GL.glPushMatrix();
+            GL.glTranslatef(i_X, i_Y, i_Z);
+            GL.glScalef(i_ScaleX, i_ScaleY, i_ScaleZ);
+            drawCube();
+            GL.glPopMatrix();
+        }
+
+        private void drawMirror(bool i_DrawWithTexturesAndColors)
+        {
+            GL.glEnable(GL.GL_STENCIL_TEST);
+            GL.glClear(GL.GL_STENCIL_BUFFER_BIT);
+
+            // Draw the mirror
+            GL.glStencilFunc(GL.GL_ALWAYS, 1, 1);
+            GL.glStencilOp(GL.GL_KEEP, GL.GL_KEEP, GL.GL_REPLACE);
+
+            GL.glPushMatrix();
+
+            if (i_DrawWithTexturesAndColors)
+            {
+                GL.glEnable(GL.GL_TEXTURE_2D);
+                GL.glBindTexture(GL.GL_TEXTURE_2D, texture[9]);
+            }
+
+            GL.glTranslatef(23.47f, 6.2f, 21.7f);
+            GL.glRotatef(90.0f, 0.0f, 0.0f, 1.0f);
+            GL.glScalef(0.28f, 0.001f, 0.20f);
+            drawCube();
+
+            if (i_DrawWithTexturesAndColors)
+            {
+                GL.glDisable(GL.GL_TEXTURE_2D);
+            }
+
+            GL.glPopMatrix();
+
+            // Configure stencil buffer for reflection
+            GL.glStencilFunc(GL.GL_EQUAL, 1, 1);
+            GL.glStencilOp(GL.GL_KEEP, GL.GL_KEEP, GL.GL_KEEP);
+
+            // Draw the reflected object
+            GL.glPushMatrix();
+            GL.glScalef(1.0f, -1.0f, 1.0f); // Flip the object for reflection
+            GL.glTranslatef(0.0f, -12.4f, 0.0f); // Adjust position for reflection
+            drawCube(); // Example of reflected cube, color red
+            GL.glPopMatrix();
+
+            GL.glDisable(GL.GL_STENCIL_TEST);
+        }
+
+        private void drawDressingTable(bool i_DrawWithTexturesAndColors)
+        {
+            // mirror
+            drawMirror(i_DrawWithTexturesAndColors);
+
+            if (i_DrawWithTexturesAndColors)
+            {
+                GL.glColor3f(0.85f, 0.8f, 0.7f);
+
+                GL.glEnable(GL.GL_TEXTURE_2D);
+                GL.glBindTexture(GL.GL_TEXTURE_2D, texture[10]);
+            }
+
+            // table left leg
+            drawScaledCube(23.0f, 1.8f, 19.89f, 0.05f, 0.17f, 0.03f);
+
+            // table right leg
+            drawScaledCube(23.0f, 1.8f, 23.5f, 0.05f, 0.17f, 0.03f);
+
+            // table plate
+            drawScaledCube(23.0f, 3.5f, 21.7f, 0.05f, 0.016f, 0.21f);
+
+            // table upper panel
+            drawScaledCube(22.989f, 8.94f, 21.7f, 0.05f, 0.01f, 0.21f);
+
+            // table left panel
+            GL.glPushMatrix();
+            GL.glTranslatef(23.5f, 6.0f, 19.74f);
+            GL.glRotatef(90.0f, 1.0f, 0.0f, 0.0f);
+            GL.glScalef(0.001f, 0.008f, 0.29f);
+            drawCube();
+            GL.glPopMatrix();
+
+            // table right panel
+            GL.glPushMatrix();
+            GL.glTranslatef(23.48f, 6.0f, 23.78f);
+            GL.glRotatef(90.0f, 1.0f, 0.0f, 0.0f);
+            GL.glScalef(0.001f, 0.008f, 0.29f);
+            drawCube();
+            GL.glPopMatrix();
+
+            if (i_DrawWithTexturesAndColors)
+            {
+                GL.glDisable(GL.GL_TEXTURE_2D);
+            }
+
+            if (i_DrawWithTexturesAndColors)
+            {
+                GL.glEnable(GL.GL_TEXTURE_2D);
+                GL.glBindTexture(GL.GL_TEXTURE_2D, texture[11]);
+                GL.glColor3f(1.0f, 1.0f, 1.0f);
+            }
+
+            drawScaledCube(22.989f, 8.73f, 21.7f, 0.02f, 0.01f, 0.15f);
+
+            if (i_DrawWithTexturesAndColors)
+            {
+                GL.glDisable(GL.GL_TEXTURE_2D);
+            }
+        }
+
+        private void drawFloorLamp(bool i_DrawWithTexturesAndColors)
+        {
+            // base of the lamp
+
+            GLUquadric obj = GLU.gluNewQuadric();
+
+            if (i_DrawWithTexturesAndColors)
+            {
+                GL.glColor3f(0.78f, 0.78f, 0.78f);
+            }
+
+            GL.glPushMatrix();
+            GL.glTranslatef(22.8f, 0.5f, 16.0f);
+            GL.glRotatef(90.0f, 1.0f, 0.0f, 0.0f);
+            GLU.gluDisk(obj, 0.0, 1.0, 50, 50);
+            GLU.gluCylinder(obj, 1.0, 1.0, 0.3, 50, 50);
+            GL.glPopMatrix();
+
+            // column of the lamp
+
+            GL.glPushMatrix();
+            GL.glTranslatef(22.8f, 8.1f, 16.0f);
+            GL.glRotatef(90.0f, 1.0f, 0.0f, 0.0f);
+            GLU.gluDisk(obj, 0.5, 0.5, 200, 200);
+            GLU.gluCylinder(obj, 0.05, 0.05, 7.7, 20, 20);
+            GL.glPopMatrix();
+
+            // lamp shade
+            if (i_DrawWithTexturesAndColors)
+            {
+                GL.glColor3f(1.0f, 0.8f, 0.6f);
+            }
+
+            GL.glPushMatrix();
+            GL.glTranslatef(22.8f, 9.05f, 16.0f);
+            GL.glRotatef(90.0f, 1.0f, 0.0f, 0.0f);
+            GLU.gluCylinder(obj, 1.0f, 0.0f, 1.0f, 30, 30);
+            GL.glPopMatrix();
+
+            // light bulb
+            if (i_DrawWithTexturesAndColors)
+            {
+                GL.glColor3f(1.0f, 1.0f, 0.8f);
+            }
+
+            GL.glPushMatrix();
+            GL.glTranslatef(22.8f, 9.05f, 15.9f);
+
+            GLU.gluSphere(obj, 0.1, 20, 20);
+            GL.glPopMatrix();
+
+            GLU.gluDeleteQuadric(obj);
+        }
+
+        private void drawPoster()
+        {
+            GL.glPushMatrix();
+            GL.glEnable(GL.GL_BLEND);
+            GL.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
+            GL.glColor4f(0.8f, 0.8f, 0.8f, 0.9f);
+            GL.glEnable(GL.GL_TEXTURE_2D);
+            GL.glBindTexture(GL.GL_TEXTURE_2D, texture[17]);
+            GL.glTranslatef(21.84f, 10.2f, 6.09f);
+            GL.glRotatef(90.0f, 1.0f, 0.0f, 0.0f);
+            GL.glScalef(0.1385f, 0.0001f, 0.567f);      
+            drawCube();
+            GL.glPopMatrix();
+            GL.glDisable(GL.GL_BLEND);
+            GL.glDisable(GL.GL_TEXTURE_2D);
+        }
+
+        private void drawDynamicLeftDoor(bool isDoorOpen, bool i_DrawWithTexturesAndColors)
+        {
+            if (!isDoorOpen)
+            {
+                doorAngle = doorAngle >= 0.0f ? doorAngle - 2.0f : doorAngle;
+
+                if (i_DrawWithTexturesAndColors)
+                {
+                    GL.glEnable(GL.GL_TEXTURE_2D);
+                    GL.glBindTexture(GL.GL_TEXTURE_2D, texture[5]);
+                }
+
+                GL.glPushMatrix();
+                GL.glTranslatef(-0.96f, 6.51f, 3.0f);
+                GL.glTranslatef(-1f, 0f, 0f);
+                GL.glRotatef(-doorAngle, 0.0f, 1.0f, 0.0f);
+                GL.glTranslatef(1f, 0f, 0f);
+                GL.glScalef(0.105f, 0.376f, 0.005f);
+                doorFlag = true;
+                drawCube();
+                GL.glPopMatrix();
+
+                if (i_DrawWithTexturesAndColors)
+                {
+                    GL.glDisable(GL.GL_TEXTURE_2D);
+                }
+            }
+
+            else
+            {
+                doorAngle = doorAngle <= 90f ? doorAngle + 2.0f : doorAngle;
+
+                if (i_DrawWithTexturesAndColors)
+                {
+                    GL.glEnable(GL.GL_TEXTURE_2D);
+                    GL.glBindTexture(GL.GL_TEXTURE_2D, texture[5]);
+                }
+                GL.glPushMatrix();
+                GL.glTranslatef(-0.96f, 6.51f, 3.0f);
+                GL.glTranslatef(-1f, 0f, 0f);
+                GL.glRotatef(doorAngle, 0.0f, -1.0f, 0.0f);
+                GL.glTranslatef(1f, 0f, 0f);
+                GL.glScalef(0.105f, 0.376f, 0.005f);
+                doorFlag = true;
+                drawCube();
+                GL.glPopMatrix();
+
+                if (i_DrawWithTexturesAndColors)
+                {
+                    GL.glDisable(GL.GL_TEXTURE_2D);
+                }
+            }
+        }
+
+        private void drawClothes()
+        {
+            float height = 6.20f;
+            uint textureNum = 12;
+            const float initialX = 12.5f;
+            const float initialZ = 5.0f;
+            const float rotationAngle = 90.0f;
+            const float scaleX = 0.10f;
+            const float scaleY = 0.01f;
+            const float scaleZ = 0.12f;
+            const float heightIncrement = 3.5f;
+
+            // Set the color for all clothes
+            GL.glColor3f(1.0f, 1.0f, 1.0f);
+
+            for (int i = 0; i < 3; i++)
+            {
+                // Enable texture for each piece of clothing
+                GL.glEnable(GL.GL_TEXTURE_2D);
+                GL.glBindTexture(GL.GL_TEXTURE_2D, texture[textureNum]);
+
+                // Draw the clothing piece
+                GL.glPushMatrix();
+                GL.glTranslatef(initialX, height, initialZ);
+                GL.glRotatef(rotationAngle, 1.0f, 0.0f, 0.0f);
+                GL.glScalef(scaleX, scaleY, scaleZ);
+                drawCube();
+                GL.glPopMatrix();
+
+                // Disable texture after drawing
+                GL.glDisable(GL.GL_TEXTURE_2D);
+
+                // Update height for the next piece of clothing
+                height += heightIncrement;
+
+                // Change the texture for the second piece
+                if (i == 1)
+                {
+                    textureNum++;
+                }
+            }
+        }
+
+        private float fishRotating()
+        {
+            if (fishbool)
+            {
+                fishAngle = Math.Min(fishAngle + 0.01f, 0.0f);
+            }
+
+            else
+            {
+                fishAngle = Math.Max(fishAngle - 0.01f, -1.5f);
+            }
+
+            return fishAngle;
+        }
+
+        private void drawFish()
+        {
+            float x_axis = 3f, y_axis = 4.2f, z_axis = 21.5f;
+
+            for (int i = 0; i <= 2; i++)
+            {
+                GL.glPushMatrix();
+                fishAngle = fishRotating();
+                GL.glRotatef(fishAngle, 0.0f, 0.0f, 1.0f);
+                GL.glTranslatef(x_axis, y_axis, z_axis);
+                GL.glColor3f(1.0f, 1.0f, 0.0f);
+                GL.glBegin(GL.GL_POLYGON);
+                GL.glVertex2f(-0.7f, -0.05f);
+                GL.glVertex2f(-0.75f, -0.1f);
+                GL.glVertex2f(-0.85f, -0.05f);
+                GL.glVertex2f(-0.75f, 0.0f);
+                GL.glEnd();
+
+                GL.glBegin(GL.GL_TRIANGLES);
+                GL.glColor3f(0.8f, 0.5f, 0.0f);
+                GL.glVertex2f(-0.83f, -0.05f);
+                GL.glVertex2f(-0.9f, -0.09f);
+                GL.glVertex2f(-0.9f, -0.01f);
+                GL.glEnd();
+
+                GL.glBegin(GL.GL_TRIANGLES);
+                GL.glColor3f(0.8f, 0.5f, 0.0f);
+                GL.glVertex2f(-0.75f, -0.095f);
+                GL.glVertex2f(-0.79f, -0.125f);
+                GL.glVertex2f(-0.77f, -0.07f);
+                GL.glEnd();
+
+                GL.glBegin(GL.GL_TRIANGLES);
+                GL.glColor3f(0.8f, 0.5f, 0.0f);
+                GL.glVertex2f(-0.75f, -0.007f);
+                GL.glVertex2f(-0.795f, 0.035f);
+                GL.glVertex2f(-0.77f, -0.02f);
+                GL.glEnd();
+
+                GL.glColor3f(0.0f, 0.0f, 0.0f);
+                GL.glBegin(GL.GL_POINTS);
+                GL.glVertex2f(-0.73f, -0.035f);         
+                GL.glEnd();
+
+                GL.glPopMatrix();
+
+                x_axis += 0.2f; y_axis += 0.5f; z_axis += 0.2f;
+            }
+        }
+
+        private void drawFish2()
+        {
+            float x_axis = 1.4f, y_axis = 4.2f, z_axis = 20f;
+
+            for (int i = 0; i <= 2; i++)
+            {
+                GL.glPushMatrix();
+                fishAngle = fishRotating();
+                GL.glRotatef(fishAngle, 0.0f, 0.0f, 1.0f);
+                GL.glTranslatef(x_axis, y_axis, z_axis);
+                GL.glColor3d(0.0, 1.0, 0.0);
+                GL.glBegin(GL.GL_POLYGON);
+                GL.glVertex2d(0.7, 0.05);
+                GL.glVertex2d(0.75, 0.1);
+                GL.glVertex2d(0.85, 0.05);
+                GL.glVertex2d(0.75, 0.0);
+                GL.glEnd();
+
+                GL.glBegin(GL.GL_TRIANGLES);
+                GL.glColor3d(0.0, 0.0, 1.0);
+                GL.glVertex2d(0.83, 0.05);
+                GL.glVertex2d(0.9, 0.09);
+                GL.glVertex2d(0.9, 0.01);
+                GL.glEnd();
+
+                GL.glBegin(GL.GL_TRIANGLES);
+                GL.glColor3d(1.0, 1.0, 0.0);
+                GL.glVertex2d(0.75, 0.095);
+                GL.glColor3d(1.0, 0.0, 0.0);
+                GL.glVertex2d(0.79, 0.125);
+                GL.glVertex2d(0.77, 0.07);
+                GL.glEnd();
+
+                GL.glBegin(GL.GL_TRIANGLES);
+                GL.glColor3d(1.0, 1.0, 0.0);
+                GL.glVertex2d(0.75, 0.007);
+                GL.glColor3d(1.0, 0.0, 0.0);
+                GL.glVertex2d(0.795, -0.035);
+                GL.glVertex2d(0.77, 0.02);
+                GL.glEnd();
+
+                GL.glColor3d(0.0, 0.0, 0.0);
+                GL.glBegin(GL.GL_POINTS);
+                GL.glVertex2d(0.73, 0.065);
+                GL.glEnd();
+                GL.glPopMatrix();
+
+                x_axis += 0.3f; y_axis += 0.5f; z_axis += 0.5f;
+            }
+        }
+
+        private void drawFish3()
+        {
+            float x_axis = 1.4f, y_axis = 4.5f;
+
+            for (int i = 0; i <= 2; i++)
+            {
+                GL.glPushMatrix();
+                fishAngle = fishRotating();
+                GL.glRotatef(fishAngle, 0.0f, 0.0f, 1.0f);
+                GL.glTranslatef(x_axis, y_axis, 23f);
+                GL.glColor3d(1.0, 0.0, 1.0);
+                GL.glBegin(GL.GL_POLYGON);
+                GL.glVertex2d(0.7, -0.3);
+                GL.glVertex2d(0.775, -0.3);
+                GL.glVertex2d(0.85, -0.25);
+                GL.glVertex2d(0.775, -0.2);
+                GL.glVertex2d(0.75, -0.2);
+                GL.glEnd();
+
+                GL.glBegin(GL.GL_TRIANGLES);
+                GL.glVertex2d(0.83, -0.25);
+                GL.glVertex2d(0.9, -0.29);
+                GL.glVertex2d(0.9, -0.21);
+                GL.glEnd();
+
+                GL.glBegin(GL.GL_TRIANGLES);
+                GL.glVertex2d(0.775, -0.2);
+                GL.glVertex2d(0.75, -0.2);
+                GL.glEnd();
+
+                GL.glBegin(GL.GL_TRIANGLES);
+                GL.glVertex2d(0.75, -0.3);
+                GL.glVertex2d(0.795, -0.35);
+                GL.glVertex2d(0.775, -0.3);
+                GL.glEnd();
+
+                GL.glColor3d(0.0, 0.0, 0.0);
+                GL.glBegin(GL.GL_POINTS);
+                GL.glVertex2d(0.73, -0.235);
+                GL.glEnd();
+                GL.glPopMatrix();
+
+                x_axis += 0.2f; y_axis += 0.5f;
+            }
+        }
+
+        private void drawAquarium(bool i_DrawWithTexturesAndColors)
+        {
+            GL.glEnable(GL.GL_TEXTURE_2D);
+            GL.glBindTexture(GL.GL_TEXTURE_2D, texture[14]);
+
+            // tank cover
+            drawScaledCube(2.4f, 6.5f, 21.7f, 0.05f, 0.01f, 0.21f);
+
+            // aqua left leg
+            drawScaledCube(2.4f, 1.8f, 19.89f, 0.05f, 0.17f, 0.03f);
+
+            // aqua right leg
+            drawScaledCube(2.4f, 1.8f, 23.5f, 0.05f, 0.17f, 0.03f);
+
+            // aqua plate
+            drawScaledCube(2.4f, 3.5f, 21.7f, 0.05f, 0.016f, 0.21f);
+
+            GL.glDisable(GL.GL_TEXTURE_2D);
+
+            // tank - bottom
+            GL.glEnable(GL.GL_TEXTURE_2D);
+            GL.glBindTexture(GL.GL_TEXTURE_2D, texture[15]);
+            drawScaledCube(2.4f, 3.7f, 21.7f, 0.05f, 0.003f, 0.21f);
+            GL.glDisable(GL.GL_TEXTURE_2D);
+
+            // tank - fish
+            drawFish();
+            drawFish2();
+            drawFish3();
+
+            // tank - left
+            GL.glPushMatrix();
+            GL.glEnable(GL.GL_BLEND);
+            GL.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
+            GL.glColor4f(1.0f, 1.0f, 1.0f, 0.6f);
+            GL.glEnable(GL.GL_TEXTURE_2D);
+            GL.glBindTexture(GL.GL_TEXTURE_2D, texture[16]);
+            GL.glTranslatef(1.9f, 5.1f, 21.7f);
+            GL.glRotatef(90.0f, 0.0f, 0.0f, 1.0f);
+            GL.glScalef(0.15f, 0.001f, 0.21f);
+            drawCube();
+            GL.glPopMatrix();
+            GL.glDisable(GL.GL_TEXTURE_2D);
+            GL.glDisable(GL.GL_BLEND);
+
+            //tank - water 
+            GL.glEnable(GL.GL_BLEND);
+            GL.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
+            //GL.glEnable(GL.GL_TEXTURE_2D);
+            GL.glBindTexture(GL.GL_TEXTURE_2D, texture[18]);
+            GL.glColor4f(0.0f, 0.8f, 0.8f, 0.4f);
+            drawScaledCube(2.4f, 4.6f, 21.7f, 0.05f, 0.1f, 0.21f);
+            GL.glDisable(GL.GL_BLEND);
+            GL.glDisable(GL.GL_TEXTURE_2D);
+
+            // tank - right
+            GL.glPushMatrix();
+            GL.glEnable(GL.GL_BLEND);
+            GL.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
+            GL.glColor4f(1.0f, 1.0f, 1.0f, 0.3f);
+            GL.glTranslatef(2.9f, 5.1f, 21.7f);
+            GL.glRotatef(90.0f, 0.0f, 0.0f, 1.0f);
+            GL.glScalef(0.15f, 0.001f, 0.21f); 
+            drawCube();
+            GL.glPopMatrix();
+
+            // tank - back
+            GL.glColor4f(1.0f, 1.0f, 1.0f, 0.3f);
+            GL.glPushMatrix();
+            GL.glTranslatef(2.4f, 5.1f, 19.6f);
+            GL.glRotatef(90.0f, 1.0f, 0.0f, 0.0f);
+            GL.glScalef(0.052f, 0.001f, 0.15f);
+            drawCube();
+            GL.glPopMatrix();
+
+            //tank - front
+            GL.glPushMatrix();
+            GL.glTranslatef(2.4f, 5.1f, 23.81f);
+            GL.glRotatef(90.0f, 1.0f, 0.0f, 0.0f);
+            GL.glScalef(0.052f, 0.001f, 0.15f);
+            drawCube();
+            GL.glPopMatrix();
+            GL.glDisable(GL.GL_COLOR);
+            GL.glDisable(GL.GL_BLEND);
+        }
+
+>>>>>>> Stashed changes
         private void DrawObjects(bool isForShades, int c)
         {
             if (isForShades)
@@ -979,6 +1835,7 @@ namespace OpenGL
                 else
                     GL.glColor3d(0.8, 0.8, 0.8);
             }
+<<<<<<< Updated upstream
             else
             {
                 GL.glColor3d(0.3f, 0.6f, 0.9f);
@@ -986,9 +1843,18 @@ namespace OpenGL
 
             drawBed();
             drawCloset();
+=======
+            drawBed(!isForShades);
+            drawCloset(!isForShades);
+            drawFloorLamp(!isForShades);
+            drawDressingTable(!isForShades);
+            drawSphere(!isForShades);
+>>>>>>> Stashed changes
             drawWindow();
+            drawAquarium(!isForShades);
+            drawPoster();
+
         }
     }
 
 }
-

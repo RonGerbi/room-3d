@@ -1142,7 +1142,7 @@ namespace OpenGL
             GL.glRotatef(90f, 0.0f, 1f, 0.0f);
             GL.glTranslatef(-12.0f, 8f, 0f);
 
-            m_Window.Draw();
+            m_Window.Draw(null);
 
             GL.glPopMatrix();
 

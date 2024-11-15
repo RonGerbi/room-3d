@@ -1,8 +1,5 @@
 ﻿using OpenGL;
 using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Text;
 
 namespace myOpenGL
 {
@@ -15,14 +12,17 @@ namespace myOpenGL
         private float m_ToZPos;
         private float m_ZPos;
 
-        public Drawer() : base()
+        private uint? m_DrawerTexture;
+
+        public Drawer(uint? i_DrawerTexture) : base()
         {
+            m_DrawerTexture = i_DrawerTexture;
             m_ToZPos = m_ZPos = k_ZPosClose;
         }
 
-        public override void Draw(uint? i_Texture)
+        public override void Draw(bool i_IsShadow)
         {
-            if (i_Texture.HasValue)
+            if (!i_IsShadow && m_DrawerTexture.HasValue)
             {
                 ApplySelectedColor();
             }
@@ -38,7 +38,7 @@ namespace myOpenGL
 
             drawDrawerSides();
             drawDrawerBottom();
-            drawDrawerFront(i_Texture);
+            drawDrawerFront(i_IsShadow);
         }
 
         private void drawDrawerSides()
@@ -52,17 +52,17 @@ namespace myOpenGL
             Cube.DrawScaledCube(0.95f, -0.63f, m_ZPos, 0.088f, 0.005f, 0.2f);
         }
 
-        private void drawDrawerFront(uint? texture)
+        private void drawDrawerFront(bool i_IsShadow)
         {
-            if (texture.HasValue)
+            if (!i_IsShadow && m_DrawerTexture.HasValue)
             {
                 GL.glEnable(GL.GL_TEXTURE_2D);
-                GL.glBindTexture(GL.GL_TEXTURE_2D, texture.Value);
+                GL.glBindTexture(GL.GL_TEXTURE_2D, m_DrawerTexture.Value);
             }
 
             Cube.DrawScaledCube(0.95f, 0.2f, m_ZPos + k_FrontDelta, 0.1f, 0.15f, 0.001f);
 
-            if (texture.HasValue)
+            if (!i_IsShadow && m_DrawerTexture.HasValue)
             {
                 GL.glDisable(GL.GL_TEXTURE_2D);
             }

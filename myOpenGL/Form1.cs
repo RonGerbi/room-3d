@@ -49,22 +49,22 @@ namespace myOpenGL
                     cGL.applyShadows = !cGL.applyShadows;
                     break;
                 case 'K':
-                    cGL.closet.OpenAllObjects();
+                    cGL.m_Closet.OpenAllObjects();
                     break;
                 case 'M':
-                    cGL.closet.CloseAllObjects();
+                    cGL.m_Closet.CloseAllObjects();
                     break;
                 case 'H':
-                    cGL.closet.SwitchSelectedObject();
+                    cGL.m_Closet.SwitchSelectedObject();
                     break;
                 case 'N':
-                    cGL.closet.UnselectObjects();
+                    cGL.m_Closet.UnselectObjects();
                     break;
                 case 'U':
-                    cGL.closet.OpenSelectedObject();
+                    cGL.m_Closet.OpenSelectedObject();
                     break;
                 case 'Y':
-                    cGL.closet.CloseSelectedObject();
+                    cGL.m_Closet.CloseSelectedObject();
                     break;
             }
         }

@@ -1,25 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Windows.Forms;
-
-//2
 using System.Drawing;
-using System.Security.AccessControl;
-using System.Runtime.InteropServices.ComTypes;
-using System.Runtime.CompilerServices;
 using myOpenGL;
 
 namespace OpenGL
 {
     class cOGL
     {
-        private readonly string r_TexturePath = "C:\\Users\\רון\\RoomOpenGL\\wood.bmp";
-        private Bed m_Bed = new Bed();
-        private DressingTable m_DressingTable = new DressingTable();
-        private Window m_Window = new Window();
-        private Lamp m_Lamp = new Lamp();
-        private Football m_Football = new Football();
-        private Aquarium m_Aquarium = new Aquarium();
+        private Bed m_Bed;
+        public Closet m_Closet;
+        private DressingTable m_DressingTable;
+        private Window m_Window;
+        private Lamp m_Lamp;
+        private Football m_Football;
+        private Aquarium m_Aquarium;
         private uint[] texture;
         Control p;
         float[,] floor = new float[3, 3];
@@ -27,12 +21,16 @@ namespace OpenGL
         public float doorAngle = 0.0f;
         public bool isCeilingLightBulbOn = true;
         public bool applyShadows = true;
-        public Closet closet = new Closet();
         int Width;
         int Height;
 
         public cOGL(Control pb)
         {
+            uint bedTexture, pillowTexture, blanketTexture, footballTexture,
+                clothesTexture, doorLeftTexture, doorRightTexture, drawerTexture,
+                tableTexture, mirrorTexture, aquariumStandTexture, aquariumTankBottomTexture,
+                aquariumTankBackTexture, aquariumTankWaterTexture;
+
             p = pb;
             Width = p.Width;
             Height = p.Height;
@@ -54,6 +52,29 @@ namespace OpenGL
             lightPos[2] = 12.5f;
             lightPos[3] = 1.0f;
             InitializeGL();
+
+            bedTexture = texture[2];
+            pillowTexture = texture[4];
+            blanketTexture = texture[3];
+            footballTexture = texture[1];
+            clothesTexture = texture[12];
+            doorLeftTexture = texture[5];
+            doorRightTexture = texture[8];
+            drawerTexture = texture[7];
+            tableTexture = texture[10];
+            mirrorTexture = texture[9];
+            aquariumStandTexture = texture[14];
+            aquariumTankBottomTexture = texture[15];
+            aquariumTankBackTexture = texture[16];
+            aquariumTankWaterTexture = texture[18];
+
+            m_Bed = new Bed(bedTexture, pillowTexture, blanketTexture);
+            m_Closet = new Closet(drawerTexture, doorLeftTexture, doorRightTexture, clothesTexture);
+            m_DressingTable = new DressingTable(tableTexture, mirrorTexture);
+            m_Window = new Window();
+            m_Lamp = new Lamp();
+            m_Football = new Football(footballTexture);
+            m_Aquarium = new Aquarium(aquariumStandTexture, aquariumTankBottomTexture, aquariumTankBackTexture, aquariumTankWaterTexture);
         }
 
         ~cOGL()
@@ -137,7 +158,7 @@ namespace OpenGL
                 GL.glDisable(GL.GL_LIGHTING);
             }
 
-            DrawObjects(false, 1);
+            DrawObjects(false);
 
             if (i_DrawWithShadows)
             {
@@ -151,7 +172,7 @@ namespace OpenGL
                     GL.glPushMatrix(); // Save matrix for shadow drawing
                     MakeShadowMatrix(floor);
                     GL.glMultMatrixf(cubeXform);
-                    DrawObjects(true, 1);
+                    DrawObjects(true);
                     GL.glPopMatrix(); // Restore matrix after drawing shadow
 
                     GL.glPopMatrix();
@@ -1090,42 +1111,20 @@ namespace OpenGL
             }
         }
 
-        private void DrawObjects(bool isForShades, int c)
+        private void DrawObjects(bool i_IsShadow)
         {
-            uint? clothesTexture = null, doorLeftTexture = null, doorRightTexture = null,
-                drawerTexture = null, tableTexture = null, mirrorTexture = null,
-                footballTexture = null, bedTexture = null, pillowTexture = null, blanketTexture = null,
+            uint? tableTexture = null, mirrorTexture = null,
                 aquariumTankCoverTexture = null, aquariumTankBottomTexture = null, aquariumTankLeftTexture = null, aquariumTankWaterTexture = null;
 
-            if (isForShades)
+            if (i_IsShadow)
             {
-                if (c == 1)
-                    GL.glColor3d(0.5, 0.5, 0.5);
-                else
-                    GL.glColor3d(0.8, 0.8, 0.8);
-            }
-            else
-            {
-                clothesTexture = texture[12];
-                doorLeftTexture = texture[5];
-                doorRightTexture = texture[8];
-                drawerTexture = texture[7];
-                tableTexture = texture[10];
-                mirrorTexture = texture[9];
-                footballTexture = texture[1];
-                bedTexture = texture[2];
-                pillowTexture = texture[4];
-                blanketTexture = texture[3];
-                aquariumTankCoverTexture = texture[14];
-                aquariumTankBottomTexture = texture[15];
-                aquariumTankLeftTexture = texture[16];
-                aquariumTankWaterTexture = texture[18];
+                GL.glColor3d(0.5, 0.5, 0.5);
             }
 
             GL.glPushMatrix();
             GL.glTranslatef(5.0f, 2.15f, 0.5f);
 
-            m_Bed.Draw(bedTexture, pillowTexture, blanketTexture);
+            m_Bed.Draw(i_IsShadow);
 
             GL.glPopMatrix();
 
@@ -1133,14 +1132,14 @@ namespace OpenGL
             GL.glTranslatef(1.5f, 0.60f, 15f);
             GL.glRotatef(120.0f, 0.0f, 1.0f, 0.0f);
 
-            m_Football.Draw(footballTexture);
+            m_Football.Draw(i_IsShadow);
 
             GL.glPopMatrix();
 
             GL.glPushMatrix();
             GL.glTranslatef(22.8f, 0.5f, 16.0f);
 
-            m_Lamp.Draw(!isForShades);
+            m_Lamp.Draw(i_IsShadow);
 
             GL.glPopMatrix();
 
@@ -1149,21 +1148,21 @@ namespace OpenGL
             GL.glRotatef(90f, 0.0f, 1f, 0.0f);
             GL.glTranslatef(-12.0f, 8f, 0f);
 
-            m_Window.Draw(null);
+            m_Window.Draw(i_IsShadow);
 
             GL.glPopMatrix();
 
-            m_DressingTable.Draw(tableTexture, mirrorTexture);
+            m_DressingTable.Draw(i_IsShadow);
 
             GL.glPushMatrix();
             GL.glTranslatef(15.0f, 0.5f, 0.0f);
             GL.glScalef(1.5f, 1.5f, 1.2f);
 
-            closet.Draw(clothesTexture, doorLeftTexture, doorRightTexture, drawerTexture);
+            m_Closet.Draw(i_IsShadow);
 
             GL.glPopMatrix();
 
-            m_Aquarium.Draw(aquariumTankCoverTexture, aquariumTankBottomTexture, aquariumTankLeftTexture, aquariumTankWaterTexture);
+            m_Aquarium.Draw(i_IsShadow);
         }
     }
 }

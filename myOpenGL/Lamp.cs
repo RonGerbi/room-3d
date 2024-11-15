@@ -1,7 +1,4 @@
 ﻿using OpenGL;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace myOpenGL
 {
@@ -12,12 +9,12 @@ namespace myOpenGL
 
         }
 
-        public void Draw(bool i_DrawWithColors)
+        public void Draw(bool i_IsShadow)
         {
             GLUquadric obj = GLU.gluNewQuadric();
 
             // Lamp base
-            if (i_DrawWithColors)
+            if (!i_IsShadow)
             {
                 GL.glColor3f(0.78f, 0.78f, 0.78f);
             }
@@ -37,7 +34,7 @@ namespace myOpenGL
             GL.glPopMatrix();
 
             // Lamp shade
-            if (i_DrawWithColors)
+            if (!i_IsShadow)
             {
                 GL.glColor3f(1.0f, 0.8f, 0.6f);
             }
@@ -48,7 +45,7 @@ namespace myOpenGL
             GL.glPopMatrix();
 
             // Light bulb
-            if (i_DrawWithColors)
+            if (!i_IsShadow)
             {
                 GL.glColor3f(1.0f, 1.0f, 0.8f);
             }

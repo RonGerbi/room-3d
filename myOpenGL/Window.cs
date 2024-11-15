@@ -1,16 +1,14 @@
 ﻿using OpenGL;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace myOpenGL
 {
     public class Window : SelectableObject
     {
         private const int k_BlindsCount = 10;
-        List<Blind> m_Blinds;
+        private List<Blind> m_Blinds;
 
-        public Window() 
+        public Window()
         {
             m_Blinds = new List<Blind>(10);
 
@@ -20,7 +18,7 @@ namespace myOpenGL
             }
         }
 
-        public override void Draw(uint? i_Texture)
+        public override void Draw(bool i_IsShadow)
         {
             float frameScaleX = 0.01f;
             float frameScaleY = 0.3f;
@@ -30,7 +28,6 @@ namespace myOpenGL
             float blindScaleX = 0.02f;
             float blindScaleY = 0.24f;
             float blindScaleZ = 0.01f;
-            int numberOfBlinds = 10;
 
             // left side
             GL.glPushMatrix();

@@ -1,8 +1,4 @@
 ﻿using OpenGL;
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Text;
 
 namespace myOpenGL
 {
@@ -15,12 +11,15 @@ namespace myOpenGL
         private float m_ToAngle;
         private float m_Angle;
 
+        private uint? m_DoorTexture;
+
         public eDoorSides DoorSides { get; set; }
 
-        public Door(eDoorSides i_DoorSides) : base()
+        public Door(eDoorSides i_DoorSides, uint? i_DoorTexture) : base()
         {
             DoorSides = i_DoorSides;
             m_Angle = k_ClosedAngle;
+            m_DoorTexture = i_DoorTexture;
         }
 
         private float MoveToAngle
@@ -42,14 +41,14 @@ namespace myOpenGL
             }
         }
 
-        public override void Draw(uint? i_Texture)
+        public override void Draw(bool i_IsShadow)
         {
-            if (i_Texture.HasValue)
+            if (!i_IsShadow && m_DoorTexture.HasValue)
             {
                 ApplySelectedColor();
 
                 GL.glEnable(GL.GL_TEXTURE_2D);
-                GL.glBindTexture(GL.GL_TEXTURE_2D, i_Texture.Value);
+                GL.glBindTexture(GL.GL_TEXTURE_2D, m_DoorTexture.Value);
             }
 
             GL.glPushMatrix();
@@ -82,7 +81,7 @@ namespace myOpenGL
 
             GL.glPopMatrix();
 
-            if (i_Texture.HasValue)
+            if (!i_IsShadow && m_DoorTexture.HasValue)
             {
                 GL.glDisable(GL.GL_TEXTURE_2D);
             }

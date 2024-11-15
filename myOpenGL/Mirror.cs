@@ -4,17 +4,24 @@ namespace myOpenGL
 {
     public class Mirror
     {
-        public void Draw(uint? i_Texture)
+        private uint? m_MirrorTexture;
+
+        public Mirror(uint? i_MirrorTexture)
         {
-            if (i_Texture.HasValue)
+            m_MirrorTexture = i_MirrorTexture;
+        }
+
+        public void Draw(bool i_IsShadow)
+        {
+            if (!i_IsShadow && m_MirrorTexture.HasValue)
             {
                 GL.glEnable(GL.GL_TEXTURE_2D);
-                GL.glBindTexture(GL.GL_TEXTURE_2D, i_Texture.Value);
+                GL.glBindTexture(GL.GL_TEXTURE_2D, m_MirrorTexture.Value);
             }
 
             Cube.Draw();
 
-            if (i_Texture.HasValue)
+            if (m_MirrorTexture.HasValue)
             {
                 GL.glDisable(GL.GL_TEXTURE_2D);
             }

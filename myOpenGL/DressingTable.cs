@@ -1,36 +1,35 @@
 ﻿using OpenGL;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace myOpenGL
 {
     public class DressingTable
     {
         private Mirror m_Mirror;
+        private uint? m_TableTexture;
 
-        public DressingTable()
+        public DressingTable(uint? i_TableTexture, uint? i_MirrorTexture)
         {
-            m_Mirror = new Mirror();
+            m_TableTexture = i_TableTexture;
+            m_Mirror = new Mirror(i_MirrorTexture);
         }
 
-        public void Draw(uint? i_TableTexture, uint? i_MirrorTexture)
+        public void Draw(bool i_IsShadow)
         {
             GL.glPushMatrix();
             GL.glTranslatef(23.47f, 6.2f, 21.7f);
             GL.glRotatef(90.0f, 0.0f, 0.0f, 1.0f);
             GL.glScalef(0.28f, 0.001f, 0.20f);
 
-            m_Mirror.Draw(i_MirrorTexture);
+            m_Mirror.Draw(i_IsShadow);
 
             GL.glPopMatrix();
 
-            if (i_TableTexture.HasValue)
+            if (!i_IsShadow && m_TableTexture.HasValue)
             {
                 GL.glColor3f(0.85f, 0.8f, 0.7f);
 
                 GL.glEnable(GL.GL_TEXTURE_2D);
-                GL.glBindTexture(GL.GL_TEXTURE_2D, i_TableTexture.Value);
+                GL.glBindTexture(GL.GL_TEXTURE_2D, m_TableTexture.Value);
             }
 
             // table left leg
@@ -61,7 +60,7 @@ namespace myOpenGL
             Cube.Draw();
             GL.glPopMatrix();
 
-            if (i_TableTexture.HasValue)
+            if (!i_IsShadow && m_TableTexture.HasValue)
             {
                 GL.glDisable(GL.GL_TEXTURE_2D);
             }

@@ -1,20 +1,23 @@
 ﻿using OpenGL;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace myOpenGL
 {
     public class Pillow
     {
-        public Pillow() { }
-        public void Draw(float x, float y, float z, float rotationAngle, uint? i_Texture)
+        private uint? m_PillowTexture;
+
+        public Pillow(uint? i_PillowTexture)
         {
-            if (i_Texture.HasValue)
+            m_PillowTexture = i_PillowTexture;
+        }
+
+        public void Draw(float x, float y, float z, float rotationAngle, bool i_IsShadow)
+        {
+            if (!i_IsShadow && m_PillowTexture.HasValue)
             {
                 GL.glColor3f(0.627f, 0.322f, 0.176f);
                 GL.glEnable(GL.GL_TEXTURE_2D);
-                GL.glBindTexture(GL.GL_TEXTURE_2D, i_Texture.Value);
+                GL.glBindTexture(GL.GL_TEXTURE_2D, m_PillowTexture.Value);
             }
 
             GL.glPushMatrix();
@@ -24,7 +27,7 @@ namespace myOpenGL
             Cube.Draw();
             GL.glPopMatrix();
 
-            if (i_Texture.HasValue)
+            if (m_PillowTexture.HasValue)
             {
                 GL.glDisable(GL.GL_TEXTURE_2D);
             }

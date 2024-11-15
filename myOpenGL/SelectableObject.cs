@@ -1,16 +1,13 @@
 ﻿using OpenGL;
-using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Text;
 
 namespace myOpenGL
 {
     public abstract class SelectableObject
     {
         protected Color RegularColor { get; set; }
-        protected Color SelectedColor {  get; set; }
-        public bool Select {  get; set; }
+        protected Color SelectedColor { get; set; }
+        public bool Select { get; set; }
 
         public SelectableObject()
         {
@@ -31,6 +28,6 @@ namespace myOpenGL
             }
         }
 
-        public abstract void Draw(uint? i_Texture);
+        public abstract void Draw(bool i_IsShadow);
     }
 }

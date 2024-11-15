@@ -1,27 +1,28 @@
 ﻿using OpenGL;
-using System;
 using System.Collections.Generic;
-using System.Drawing.Text;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Windows.Forms;
 
 namespace myOpenGL
 {
     public class Closet
     {
-        private int? m_SelectedIdx = null;
         private List<SelectableObject> m_Selectables;
         private List<Door> m_Doors;
         private List<Drawer> m_Drawers;
+        private int? m_SelectedIdx = null;
+        private uint? m_ClothesTexture;
 
-        public Closet()
+        public Closet(uint? i_DrawerTexture, uint? i_LeftDoorTexture, uint? i_RightDoorTexture, uint? i_ClothesTexture)
         {
             int numOfDoors = 4;
             int numOfDrawers = 4;
-            
+
+            m_ClothesTexture = i_ClothesTexture;
+
             m_Selectables = new List<SelectableObject>(numOfDoors + numOfDrawers);
-            m_Doors = new List<Door>(numOfDoors) { new Door(eDoorSides.Left), new Door(eDoorSides.Right), new Door(eDoorSides.Left), new Door(eDoorSides.Right) };
+            m_Doors = new List<Door>(numOfDoors) { new Door(eDoorSides.Left, i_LeftDoorTexture),
+                new Door(eDoorSides.Right, i_RightDoorTexture),
+                new Door(eDoorSides.Left, i_LeftDoorTexture),
+                new Door(eDoorSides.Right, i_RightDoorTexture) };
             m_Drawers = new List<Drawer>(numOfDrawers);
 
             foreach (Door door in m_Doors)
@@ -31,7 +32,7 @@ namespace myOpenGL
 
             for (int i = 0; i < numOfDrawers; i++)
             {
-                m_Drawers.Add(new Drawer());
+                m_Drawers.Add(new Drawer(i_DrawerTexture));
                 m_Selectables.Add(m_Drawers[i]);
             }
         }
@@ -61,24 +62,24 @@ namespace myOpenGL
             }
         }
 
-        public void Draw(uint? i_ClothesTexture, uint? i_DoorLeftTexture, uint? i_DoorRightTexture, uint? i_DrawerTexture)
+        public void Draw(bool i_IsShadow)
         {
-            if (i_ClothesTexture.HasValue)
+            if (!i_IsShadow)
             {
-                drawClothes(i_ClothesTexture.Value);
+                drawClothes();
             }
 
             float shelfHeightDelta = 0.0f;
 
-            if (i_ClothesTexture.HasValue)
+            if (!i_IsShadow)
             {
                 GL.glColor3f(0.8f, 0.8f, 0.8f);
             }
 
             drawShelves(ref shelfHeightDelta);
-            drawDrawers(i_DrawerTexture);
-            drawDoors(i_DoorLeftTexture, i_DoorRightTexture);
-            drawClosetSides(i_ClothesTexture.HasValue);
+            drawDrawers(i_IsShadow);
+            drawDoors(i_IsShadow);
+            drawClosetSides(i_IsShadow);
         }
 
         public void OpenSelectedObject()
@@ -119,7 +120,7 @@ namespace myOpenGL
             }
         }
 
-        private void drawDoors(uint? i_DoorLeftTexture, uint? i_DoorRightTexture)
+        private void drawDoors(bool i_IsShadow)
         {
             GL.glPushMatrix();
             GL.glTranslatef(-0.5f, 0f, 2.02f);
@@ -129,16 +130,16 @@ namespace myOpenGL
 
             foreach (Door door in m_Doors)
             {
-                door.Draw(door.DoorSides == eDoorSides.Left ? i_DoorLeftTexture : i_DoorRightTexture);
+                door.Draw(i_IsShadow);
                 GL.glTranslatef(2f, 0f, 0.0f);
             }
 
             GL.glPopMatrix();
         }
 
-        private void drawClosetSides(bool i_DrawWithTexturesAndColors)
+        private void drawClosetSides(bool i_IsShadow)
         {
-            if (i_DrawWithTexturesAndColors)
+            if (!i_IsShadow)
             {
                 GL.glColor3f(0.8f, 0.8f, 0.8f);
             }
@@ -158,7 +159,7 @@ namespace myOpenGL
             GL.glPopMatrix();
         }
 
-        private void drawDrawers(uint? i_Texture)
+        private void drawDrawers(bool i_IsShadow)
         {
             float drawerXDelta = -2.43f;
 
@@ -167,7 +168,7 @@ namespace myOpenGL
                 GL.glPushMatrix();
                 GL.glTranslatef(drawerXDelta, 1.0f, 3.0f);
 
-                drawer.Draw(i_Texture);
+                drawer.Draw(i_IsShadow);
 
                 GL.glPopMatrix();
 
@@ -189,7 +190,7 @@ namespace myOpenGL
             }
         }
 
-        private void drawClothes(uint texture)
+        private void drawClothes()
         {
             float height = 3.8f;
             float horizontalPosition = -1.5f;
@@ -209,7 +210,7 @@ namespace myOpenGL
             {
                 // Enable texture for each piece of clothing
                 GL.glEnable(GL.GL_TEXTURE_2D);
-                GL.glBindTexture(GL.GL_TEXTURE_2D, texture);
+                GL.glBindTexture(GL.GL_TEXTURE_2D, m_ClothesTexture.Value);
 
                 // Draw the clothing piece
                 GL.glPushMatrix();

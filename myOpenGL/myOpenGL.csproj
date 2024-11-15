@@ -43,6 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Aquarium.cs" />
     <Compile Include="Bed.cs" />
     <Compile Include="Blind.cs" />
     <Compile Include="Closet.cs" />
@@ -52,6 +53,7 @@
     <Compile Include="Drawer.cs" />
     <Compile Include="DressingTable.cs" />
     <Compile Include="eDoorSides.cs" />
+    <Compile Include="Fish.cs" />
     <Compile Include="Football.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>

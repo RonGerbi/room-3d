@@ -19,6 +19,7 @@ namespace OpenGL
         private Window m_Window = new Window();
         private Lamp m_Lamp = new Lamp();
         private Football m_Football = new Football();
+        private Aquarium m_Aquarium = new Aquarium();
         private uint[] texture;
         Control p;
         float[,] floor = new float[3, 3];
@@ -442,7 +443,8 @@ namespace OpenGL
 
             string[] imageFiles = { "wood.bmp", "soccer_ball.bmp", "bed_body.bmp", "blanket.bmp", "Pillow.bmp",
           "door.bmp", "closet.bmp", "drawers.bmp", "doors_right.bmp", "mirror.bmp", "dressingTable.bmp",
-          "LED.bmp", "clothes.bmp", "jeans.bmp" };
+          "LED.bmp", "clothes.bmp", "jeans.bmp", "aqua_table.bmp", "aqua_bottom.bmp","aqua_back2.bmp",
+          "closet_poster2.bmp", "water_proof.bmp", "bed_pannel.bmp" };
 
             int numTextures = imageFiles.Length;
             texture = new uint[numTextures];  // יצירת מערך עבור הטקסטורות
@@ -1092,7 +1094,8 @@ namespace OpenGL
         {
             uint? clothesTexture = null, doorLeftTexture = null, doorRightTexture = null,
                 drawerTexture = null, tableTexture = null, mirrorTexture = null,
-                footballTexture = null, bedTexture = null, pillowTexture = null, blanketTexture = null;
+                footballTexture = null, bedTexture = null, pillowTexture = null, blanketTexture = null,
+                aquariumTankCoverTexture = null, aquariumTankBottomTexture = null, aquariumTankLeftTexture = null, aquariumTankWaterTexture = null;
 
             if (isForShades)
             {
@@ -1113,6 +1116,10 @@ namespace OpenGL
                 bedTexture = texture[2];
                 pillowTexture = texture[4];
                 blanketTexture = texture[3];
+                aquariumTankCoverTexture = texture[14];
+                aquariumTankBottomTexture = texture[15];
+                aquariumTankLeftTexture = texture[16];
+                aquariumTankWaterTexture = texture[18];
             }
 
             GL.glPushMatrix();
@@ -1155,6 +1162,8 @@ namespace OpenGL
             closet.Draw(clothesTexture, doorLeftTexture, doorRightTexture, drawerTexture);
 
             GL.glPopMatrix();
+
+            m_Aquarium.Draw(aquariumTankCoverTexture, aquariumTankBottomTexture, aquariumTankLeftTexture, aquariumTankWaterTexture);
         }
     }
 }

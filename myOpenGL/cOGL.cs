@@ -12,7 +12,7 @@ namespace OpenGL
         private DressingTable m_DressingTable;
         private Window m_Window;
         private Lamp m_Lamp;
-        private Football m_Football;
+        public Football m_Football;
         private Aquarium m_Aquarium;
         private uint[] texture;
         Control p;
@@ -1130,7 +1130,6 @@ namespace OpenGL
 
             GL.glPushMatrix();
             GL.glTranslatef(1.5f, 0.60f, 15f);
-            GL.glRotatef(120.0f, 0.0f, 1.0f, 0.0f);
 
             m_Football.Draw(i_IsShadow);
 

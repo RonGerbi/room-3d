@@ -1,17 +1,14 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 using OpenGL;
-using System.Runtime.InteropServices; 
 
 namespace myOpenGL
 {
     public partial class Form1 : Form
     {
+        private bool m_IsMiddleMouseDown = false;
+        private Point m_LastMousePosition;
         cOGL cGL;
 
         public Form1()
@@ -33,7 +30,45 @@ namespace myOpenGL
 
             this.KeyPreview = true;
 
-            this.KeyPress += new KeyPressEventHandler(Form1_KeyPress);
+            this.KeyPress += Form1_KeyPress;
+            this.MouseDown += Form1_MouseDown;
+            this.MouseMove += Form_MouseMove;
+            this.MouseUp += Form_MouseUp;
+        }
+
+        private void Form1_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Middle)
+            {
+                m_IsMiddleMouseDown = true;
+                m_LastMousePosition = e.Location;
+            }
+        }
+
+        private void Form_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (m_IsMiddleMouseDown)
+            {
+                int deltaX = e.X - m_LastMousePosition.X;
+
+                if (deltaX < 0)
+                {
+                    cGL.intOptionC = 0;
+                    HScrollBar hb = (HScrollBar)sender;
+                    int n = int.Parse(hb.Name.Substring(hb.Name.Length - 1));
+                    cGL.ScrollValue[0] = -deltaX;
+                }
+
+                m_LastMousePosition = e.Location;
+            }
+        }
+
+        private void Form_MouseUp(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Middle)
+            {
+                m_IsMiddleMouseDown = false;
+            }
         }
 
         private void Form1_KeyPress(object sender, KeyPressEventArgs e)
@@ -65,6 +100,12 @@ namespace myOpenGL
                     break;
                 case 'Y':
                     cGL.m_Closet.CloseSelectedObject();
+                    break;
+                case 'F':
+                    cGL.m_Football.Rotate();
+                    break;
+                case 'Q':
+                    cGL.m_Football.Freeze();
                     break;
             }
         }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace myOpenGL
 {
-    public class Closet
+    public class Closet: SelectableObject
     {
         private List<SelectableObject> m_Selectables;
         private List<Door> m_Doors;
@@ -62,10 +62,12 @@ namespace myOpenGL
             }
         }
 
-        public void Draw(bool i_IsShadow)
+        public override void Draw(bool i_IsShadow)
         {
             if (!i_IsShadow)
             {
+                ApplySelectedColor();
+
                 drawClothes();
             }
 

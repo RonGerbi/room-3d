@@ -2,7 +2,7 @@
 
 namespace myOpenGL
 {
-    public class DressingTable
+    public class DressingTable: SelectableObject
     {
         private Mirror m_Mirror;
         private uint? m_TableTexture;
@@ -13,7 +13,7 @@ namespace myOpenGL
             m_Mirror = new Mirror(i_MirrorTexture);
         }
 
-        public void Draw(bool i_IsShadow)
+        public override void Draw(bool i_IsShadow)
         {
             GL.glPushMatrix();
             GL.glTranslatef(23.47f, 6.2f, 21.7f);
@@ -26,6 +26,8 @@ namespace myOpenGL
 
             if (!i_IsShadow && m_TableTexture.HasValue)
             {
+                ApplySelectedColor();
+
                 GL.glColor3f(0.85f, 0.8f, 0.7f);
 
                 GL.glEnable(GL.GL_TEXTURE_2D);

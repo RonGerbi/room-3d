@@ -206,7 +206,7 @@ namespace OpenGL
             // not trivial
             double[] ModelVievMatrixBeforeSpecificTransforms = new double[16];
             double[] CurrentRotationTraslation = new double[16];
-
+            
             GLU.gluLookAt(ScrollValue[0], ScrollValue[1], ScrollValue[2],
                        ScrollValue[3], ScrollValue[4], ScrollValue[5],
                        ScrollValue[6], ScrollValue[7], ScrollValue[8]);

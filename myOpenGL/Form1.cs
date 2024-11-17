@@ -8,7 +8,7 @@ namespace myOpenGL
     public partial class Form1 : Form
     {
         private bool m_IsMiddleMouseDown = false;
-        private Point m_LastMousePosition;
+        private Point m_AnchorMousePosition;
         cOGL cGL;
 
         public Form1()
@@ -31,39 +31,48 @@ namespace myOpenGL
             this.KeyPreview = true;
 
             this.KeyPress += Form1_KeyPress;
-            this.MouseDown += Form1_MouseDown;
-            this.MouseMove += Form_MouseMove;
-            this.MouseUp += Form_MouseUp;
+            panel1.MouseDown += Panel_MouseDown;
+            panel1.MouseMove += Panel_MouseMove;
+            panel1.MouseUp += Panel_MouseUp;
+            panel1.MouseWheel += Panel_MouseWheel;
         }
 
-        private void Form1_MouseDown(object sender, MouseEventArgs e)
+        private void Panel_MouseWheel(object sender, MouseEventArgs e)
+        {
+            if (e.Delta > 0)
+            {
+                cGL.zShift += 100f;
+                cGL.intOptionC = 6;
+            }
+            else if (e.Delta < 0)
+            {
+                cGL.zShift -= 100f;
+                cGL.intOptionC = -6;
+            }
+        }
+
+        private void Panel_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Middle)
             {
                 m_IsMiddleMouseDown = true;
-                m_LastMousePosition = e.Location;
+                m_AnchorMousePosition = e.Location;
             }
         }
 
-        private void Form_MouseMove(object sender, MouseEventArgs e)
+        private void Panel_MouseMove(object sender, MouseEventArgs e)
         {
             if (m_IsMiddleMouseDown)
             {
-                int deltaX = e.X - m_LastMousePosition.X;
+                float deltaX = (e.X - m_AnchorMousePosition.X) / 20f;
+                float deltaY = (e.Y - m_AnchorMousePosition.Y) / 20f;
 
-                if (deltaX < 0)
-                {
-                    cGL.intOptionC = 0;
-                    HScrollBar hb = (HScrollBar)sender;
-                    int n = int.Parse(hb.Name.Substring(hb.Name.Length - 1));
-                    cGL.ScrollValue[0] = -deltaX;
-                }
-
-                m_LastMousePosition = e.Location;
+                cGL.ScrollValue[0] = deltaX;
+                cGL.ScrollValue[1] = deltaY;
             }
         }
 
-        private void Form_MouseUp(object sender, MouseEventArgs e)
+        private void Panel_MouseUp(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Middle)
             {
@@ -117,11 +126,6 @@ namespace myOpenGL
             {
                 cGL.OnResize();
             }
-        }
-
-        private void Form1_Load(object sender, EventArgs e)
-        {
-
         }
 
         private void hScrollBarScroll(object sender, ScrollEventArgs e)

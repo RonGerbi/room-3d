@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace myOpenGL
 {
-    public class Bed
+    public class Bed: SelectableObject
     {
         private List<Pillow> m_Pillows;
         private uint? m_BedTexture, m_BlanketTexture;
@@ -16,11 +16,13 @@ namespace myOpenGL
             m_BlanketTexture = i_BlanketTexture;
         }
 
-        public void Draw(bool i_IsShadow)
+        public override void Draw(bool i_IsShadow)
         {
             //bed head
             if (!i_IsShadow)
             {
+                ApplySelectedColor();
+
                 GL.glColor3f(0.329f, 0.188f, 0.016f);
             }
 

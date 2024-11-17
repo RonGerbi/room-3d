@@ -28,6 +28,7 @@ namespace myOpenGL
         /// </summary>
         private void InitializeComponent()
         {
+            this.panel1 = new System.Windows.Forms.Panel();
             this.components = new System.ComponentModel.Container();
             this.hScrollBar1 = new System.Windows.Forms.HScrollBar();
             this.hScrollBar2 = new System.Windows.Forms.HScrollBar();
@@ -62,6 +63,15 @@ namespace myOpenGL
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown5)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown6)).BeginInit();
             this.SuspendLayout();
+
+            this.panel1.BackColor = System.Drawing.SystemColors.ButtonFace;
+            this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel1.Location = new System.Drawing.Point(0, 0);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(856, 576);
+            this.panel1.TabIndex = 6;
+            this.panel1.Resize += new System.EventHandler(this.panel1_Resize);
+
             // 
             // hScrollBar1
             // 
@@ -378,10 +388,10 @@ namespace myOpenGL
             this.Controls.Add(this.hScrollBar3);
             this.Controls.Add(this.hScrollBar2);
             this.Controls.Add(this.hScrollBar1);
+            this.Controls.Add(this.panel1);
             this.Name = "Form1";
             this.Text = "Room";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
-            this.Load += new System.EventHandler(this.Form1_Load);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown3)).EndInit();
@@ -397,6 +407,7 @@ namespace myOpenGL
         }
 
         #endregion
+        private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.HScrollBar hScrollBar1;
         private System.Windows.Forms.HScrollBar hScrollBar2;
         private System.Windows.Forms.HScrollBar hScrollBar3;

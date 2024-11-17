@@ -2,20 +2,22 @@
 
 namespace myOpenGL
 {
-    public class Lamp
+    public class Lamp: SelectableObject
     {
         public Lamp()
         {
 
         }
 
-        public void Draw(bool i_IsShadow)
+        public override void Draw(bool i_IsShadow)
         {
             GLUquadric obj = GLU.gluNewQuadric();
 
             // Lamp base
             if (!i_IsShadow)
             {
+                ApplySelectedColor();
+
                 GL.glColor3f(0.78f, 0.78f, 0.78f);
             }
 

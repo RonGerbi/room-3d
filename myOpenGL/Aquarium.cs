@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace myOpenGL
 {
-    public class Aquarium
+    public class Aquarium: SelectableObject
     {
         uint? m_StandTexture, m_TankBottomTexture, m_TankBackTexture, m_TankWaterTexture;
 
@@ -15,14 +15,16 @@ namespace myOpenGL
             m_TankWaterTexture = i_TankWaterTexture;
         }
 
-        public void Draw(bool i_IsShadow)
+        public override void Draw(bool i_IsShadow)
         {
             if (!i_IsShadow && m_StandTexture.HasValue)
             {
+                ApplySelectedColor();
+
                 GL.glEnable(GL.GL_TEXTURE_2D);
                 GL.glBindTexture(GL.GL_TEXTURE_2D, m_StandTexture.Value);
             }
-            
+
             // tank cover
             Cube.DrawScaledCube(2.4f, 6.5f, 21.7f, 0.05f, 0.01f, 0.21f);
 
@@ -53,7 +55,7 @@ namespace myOpenGL
             {
                 GL.glDisable(GL.GL_TEXTURE_2D);
             }
-            
+
             List<Fish> fish = new List<Fish>(3) { new Fish(1.4f, 4.5f, 23.5f), new Fish(1.8f, 5f, 21.5f), new Fish(1.4f, 5.5f, 20.5f) };
 
             foreach (Fish f in fish)
@@ -96,7 +98,7 @@ namespace myOpenGL
             }
 
             Cube.DrawScaledCube(2.4f, 4.6f, 21.7f, 0.05f, 0.1f, 0.21f);
-            
+
 
             if (!i_IsShadow && m_TankWaterTexture.HasValue)
             {

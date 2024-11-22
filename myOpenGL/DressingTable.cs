@@ -4,26 +4,15 @@ namespace myOpenGL
 {
     public class DressingTable: SelectableObject
     {
-        private Mirror m_Mirror;
         private uint? m_TableTexture;
 
-        public DressingTable(uint? i_TableTexture, uint? i_MirrorTexture)
+        public DressingTable(uint? i_TableTexture)
         {
             m_TableTexture = i_TableTexture;
-            m_Mirror = new Mirror(i_MirrorTexture);
         }
 
         public override void Draw(bool i_IsShadow)
         {
-            GL.glPushMatrix();
-            GL.glTranslatef(23.47f, 6.2f, 21.7f);
-            GL.glRotatef(90.0f, 0.0f, 0.0f, 1.0f);
-            GL.glScalef(0.28f, 0.001f, 0.20f);
-
-            m_Mirror.Draw(i_IsShadow);
-
-            GL.glPopMatrix();
-
             if (!i_IsShadow && m_TableTexture.HasValue)
             {
                 ApplySelectedColor();

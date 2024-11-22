@@ -1,9 +1,10 @@
 ﻿using OpenGL;
 using System.Collections.Generic;
+using System.Drawing;
 
 namespace myOpenGL
 {
-    public class Bed: SelectableObject
+    public class Bed
     {
         private List<Pillow> m_Pillows;
         private uint? m_BedTexture, m_BlanketTexture;
@@ -16,13 +17,11 @@ namespace myOpenGL
             m_BlanketTexture = i_BlanketTexture;
         }
 
-        public override void Draw(bool i_IsShadow)
+        public void Draw(bool i_IsShadow)
         {
             //bed head
             if (!i_IsShadow)
             {
-                ApplySelectedColor();
-
                 GL.glColor3f(0.329f, 0.188f, 0.016f);
             }
 
@@ -33,6 +32,7 @@ namespace myOpenGL
             if (!i_IsShadow && m_BedTexture.HasValue)
             {
                 GL.glColor3f(0.639f, 0.545f, 0.204f);
+
                 GL.glEnable(GL.GL_TEXTURE_2D);
                 GL.glBindTexture(GL.GL_TEXTURE_2D, m_BedTexture.Value);
             }
@@ -56,6 +56,7 @@ namespace myOpenGL
             if (!i_IsShadow && m_BlanketTexture.HasValue)
             {
                 GL.glColor3f(0.627f, 0.322f, 0.176f);
+                
                 GL.glEnable(GL.GL_TEXTURE_2D);
                 GL.glBindTexture(GL.GL_TEXTURE_2D, m_BlanketTexture.Value);
             }

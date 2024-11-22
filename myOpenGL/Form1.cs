@@ -116,6 +116,12 @@ namespace myOpenGL
                 case 'Q':
                     cGL.m_Football.Freeze();
                     break;
+                case 'R':
+                    cGL.ReflectiveFloor = !cGL.ReflectiveFloor;
+                    break;
+                case 'E':
+                    cGL.ReflectiveMirror = !cGL.ReflectiveMirror;
+                    break;
             }
         }
 

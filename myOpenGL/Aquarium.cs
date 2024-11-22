@@ -5,10 +5,15 @@ namespace myOpenGL
 {
     public class Aquarium: SelectableObject
     {
+        List<Fish> m_Fish;
         uint? m_StandTexture, m_TankBottomTexture, m_TankBackTexture, m_TankWaterTexture;
 
         public Aquarium(uint? i_StandTexture, uint? i_TankBottomTexture, uint? i_TankBackTexture, uint? i_TankWaterTexture) 
         {
+            m_Fish = new List<Fish>(3) { new Fish(2.1f, 6f, 23.5f, 2.1f, 6f, 23.5f, 2.1f, 6f, 26f),
+                new Fish(2.5f, 5.5f, 23.5f, 2.5f, 5.5f, 23.5f, 2.5f, 5.5f, 26f),
+                new Fish(2.8f, 5.7f, 23.5f, 2.8f, 5.7f, 23.5f, 2.8f, 5.7f, 26f) };
+
             m_StandTexture = i_StandTexture;
             m_TankBottomTexture = i_TankBottomTexture;
             m_TankBackTexture = i_TankBackTexture;
@@ -56,9 +61,7 @@ namespace myOpenGL
                 GL.glDisable(GL.GL_TEXTURE_2D);
             }
 
-            List<Fish> fish = new List<Fish>(3) { new Fish(1.4f, 4.5f, 23.5f), new Fish(1.8f, 5f, 21.5f), new Fish(1.4f, 5.5f, 20.5f) };
-
-            foreach (Fish f in fish)
+            foreach (Fish f in m_Fish)
             {
                 f.Draw();
             }

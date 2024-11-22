@@ -2,6 +2,7 @@
 using System.Windows.Forms;
 using System.Drawing;
 using myOpenGL;
+using System.Collections.Generic;
 
 namespace OpenGL
 {
@@ -10,6 +11,7 @@ namespace OpenGL
         private Bed m_Bed;
         public Closet m_Closet;
         private DressingTable m_DressingTable;
+        private Mirror m_Mirror;
         private Window m_Window;
         private Lamp m_Lamp;
         public Football m_Football;
@@ -51,6 +53,10 @@ namespace OpenGL
             lightPos[1] = 17f;
             lightPos[2] = 12.5f;
             lightPos[3] = 1.0f;
+
+            ReflectiveFloor = true;
+            ReflectiveMirror = true;
+
             InitializeGL();
 
             bedTexture = texture[2];
@@ -70,7 +76,8 @@ namespace OpenGL
 
             m_Bed = new Bed(bedTexture, pillowTexture, blanketTexture);
             m_Closet = new Closet(drawerTexture, doorLeftTexture, doorRightTexture, clothesTexture);
-            m_DressingTable = new DressingTable(tableTexture, mirrorTexture);
+            m_DressingTable = new DressingTable(tableTexture);
+            m_Mirror = new Mirror(mirrorTexture);
             m_Window = new Window();
             m_Lamp = new Lamp();
             m_Football = new Football(footballTexture);
@@ -102,6 +109,8 @@ namespace OpenGL
             get { return m_uint_RC; }
         }
 
+        public bool ReflectiveFloor { get; set; }
+        public bool ReflectiveMirror { get; set; }
 
         void DrawOldAxes()
         {
@@ -282,7 +291,55 @@ namespace OpenGL
 
             //REFLECTION b    	
 
-            //only floor, draw only to STENCIL buffer
+            if (ReflectiveFloor)
+            {
+                configureStencilForFloor();
+
+                GL.glStencilFunc(GL.GL_EQUAL, 1, 0xFFFFFFFF);
+                GL.glStencilOp(GL.GL_KEEP, GL.GL_KEEP, GL.GL_KEEP);
+
+                renderReflectedScene('Y', false, new float[] { 0, 0, 0, });
+            }
+
+            GL.glPushMatrix();
+            GL.glTranslatef(-12.5f, 0.0f, 0.0f);
+
+            drawFloor(25f, 0f, 0f, 0f);
+
+            GL.glPopMatrix();
+
+            GL.glDisable(GL.GL_STENCIL_TEST);
+
+            if (ReflectiveMirror)
+            {
+                configureStencilForMirror();
+
+                GL.glStencilFunc(GL.GL_EQUAL, 2, 0xFFFFFFFF);
+                GL.glStencilOp(GL.GL_KEEP, GL.GL_KEEP, GL.GL_KEEP);
+
+                renderReflectedScene('X', true, new float[] { 11f, 6.25f, 21.8f });
+            }
+
+            GL.glPushMatrix();
+            GL.glTranslatef(11f, 6.25f, 21.8f);
+            GL.glRotatef(90.0f, 0.0f, 0.0f, 1.0f);
+            GL.glScalef(0.26f, 0.0007f, 0.2f);
+
+            m_Mirror.Draw(true);
+
+            GL.glPopMatrix();
+
+            GL.glDisable(GL.GL_STENCIL_TEST);
+            
+            DrawFigures(true);
+
+            GL.glFlush();
+
+            WGL.wglSwapBuffers(m_uint_DC);
+        }
+
+        private void configureStencilForFloor()
+        {
             GL.glEnable(GL.GL_STENCIL_TEST);
             GL.glStencilOp(GL.GL_REPLACE, GL.GL_REPLACE, GL.GL_REPLACE);
             GL.glStencilFunc(GL.GL_ALWAYS, 1, 0xFFFFFFFF); // draw floor always
@@ -295,49 +352,69 @@ namespace OpenGL
 
             GL.glTranslatef(12.5f, 0f, 0f);
 
-            // restore regular settings
             GL.glColorMask((byte)GL.GL_TRUE, (byte)GL.GL_TRUE, (byte)GL.GL_TRUE, (byte)GL.GL_TRUE);
             GL.glEnable(GL.GL_DEPTH_TEST);
+        }
 
-            // reflection is drawn only where STENCIL buffer value equal to 1
-            GL.glStencilFunc(GL.GL_EQUAL, 1, 0xFFFFFFFF);
-            GL.glStencilOp(GL.GL_KEEP, GL.GL_KEEP, GL.GL_KEEP);
-
+        private void configureStencilForMirror()
+        {
             GL.glEnable(GL.GL_STENCIL_TEST);
+            GL.glStencilOp(GL.GL_REPLACE, GL.GL_REPLACE, GL.GL_REPLACE);
+            GL.glStencilFunc(GL.GL_ALWAYS, 2, 0xFFFFFFFF); // draw floor always
+            GL.glColorMask((byte)GL.GL_FALSE, (byte)GL.GL_FALSE, (byte)GL.GL_FALSE, (byte)GL.GL_FALSE);
+            GL.glDisable(GL.GL_DEPTH_TEST);
 
-            // draw reflected scene
             GL.glPushMatrix();
-            GL.glScalef(1, -1, 1); //swap on Z axis
+            GL.glTranslatef(11f, 6.25f, 21.8f);
+            GL.glRotatef(90.0f, 0.0f, 0.0f, 1.0f);
+            GL.glScalef(0.26f, 0.0007f, 0.2f);
+
+            m_Mirror.Draw(false);
+
+            GL.glPopMatrix();
+            GL.glColorMask((byte)GL.GL_TRUE, (byte)GL.GL_TRUE, (byte)GL.GL_TRUE, (byte)GL.GL_TRUE);
+            GL.glEnable(GL.GL_DEPTH_TEST);
+        }
+
+        private void renderReflectedScene(char i_ReflectionAxis, bool i_DrawFloor, float[] i_Position)
+        {
+            GL.glPushMatrix();
+
+            GL.glTranslatef(i_Position[0], i_Position[1], i_Position[2]);
+
+            switch (i_ReflectionAxis)
+            {
+                case 'X':
+                    GL.glScalef(-0.5f, 0.5f, 0.5f); // adjust size for visual reasons
+                    break;
+                case 'Y':
+                    GL.glScalef(1f, -1f, 1f);
+                    break;
+                case 'Z':
+                    GL.glScalef(1f, 1f, -1f);
+                    break;
+            }
+
+            if (i_DrawFloor)
+            {
+                GL.glPushMatrix();
+                GL.glTranslatef(-12.5f, 0.0f, 0.0f);
+
+                drawFloor(25f, 0f, 0f, 0f);
+
+                GL.glPopMatrix();
+            }
+
             GL.glEnable(GL.GL_CULL_FACE);
+
             GL.glCullFace(GL.GL_BACK);
             DrawFigures(false);
             GL.glCullFace(GL.GL_FRONT);
             DrawFigures(false);
+
             GL.glDisable(GL.GL_CULL_FACE);
-            GL.glPopMatrix();
-
-
-            // really draw floor 
-            //( half-transparent ( see its color's alpha byte)))
-            // in order to see reflected objects 
-            GL.glDepthMask((byte)GL.GL_FALSE);
-            GL.glPushMatrix();
-            GL.glTranslatef(-12.5f, 0.0f, 0.0f);
-
-            drawFloor(25f, 0f, 0f, 0f);
 
             GL.glPopMatrix();
-            GL.glDepthMask((byte)GL.GL_TRUE);
-            // Disable GL.GL_STENCIL_TEST to show All, else it will be cut on GL.GL_STENCIL
-            GL.glDisable(GL.GL_STENCIL_TEST);
-
-            //////////////
-
-            DrawFigures(true);
-
-            GL.glFlush();
-
-            WGL.wglSwapBuffers(m_uint_DC);
         }
 
         protected virtual void InitializeGL()
@@ -1113,9 +1190,6 @@ namespace OpenGL
 
         private void DrawObjects(bool i_IsShadow)
         {
-            uint? tableTexture = null, mirrorTexture = null,
-                aquariumTankCoverTexture = null, aquariumTankBottomTexture = null, aquariumTankLeftTexture = null, aquariumTankWaterTexture = null;
-
             if (i_IsShadow)
             {
                 GL.glColor3d(0.5, 0.5, 0.5);

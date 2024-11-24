@@ -111,10 +111,10 @@ namespace myOpenGL
                     cGL.m_Closet.CloseSelectedObject();
                     break;
                 case 'F':
-                    cGL.m_Football.Rotate();
+                    cGL.m_Football.MoveForward();
                     break;
-                case 'Q':
-                    cGL.m_Football.Freeze();
+                case 'B':
+                    cGL.m_Football.MoveBackwards();
                     break;
                 case 'R':
                     cGL.ReflectiveFloor = !cGL.ReflectiveFloor;
@@ -232,6 +232,24 @@ namespace myOpenGL
         private void updateTimer_Tick(object sender, EventArgs e)
         {
             cGL.Draw();
+        }
+
+        private void lightXPos_Scroll(object sender, ScrollEventArgs e)
+        {
+            HScrollBar xPosScroller = (HScrollBar)sender;
+            cGL.lightPos[0] = xPosScroller.Value;
+        }
+
+        private void lightYPos_Scroll(object sender, ScrollEventArgs e)
+        {
+            HScrollBar xPosScroller = (HScrollBar)sender;
+            cGL.lightPos[1] = xPosScroller.Value;
+        }
+
+        private void lightZPos_Scroll(object sender, ScrollEventArgs e)
+        {
+            HScrollBar xPosScroller = (HScrollBar)sender;
+            cGL.lightPos[2] = xPosScroller.Value;
         }
     }
 }

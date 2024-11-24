@@ -19,7 +19,7 @@ namespace OpenGL
         private uint[] texture;
         Control p;
         float[,] floor = new float[3, 3];
-        float[] lightPos = new float[4];
+        public float[] lightPos = new float[4];
         public float doorAngle = 0.0f;
         public bool isCeilingLightBulbOn = true;
         public bool applyShadows = true;
@@ -471,7 +471,6 @@ namespace OpenGL
                 return;
             }
 
-
             initRenderingGL();
         }
 
@@ -499,7 +498,6 @@ namespace OpenGL
             GL.glEnable(GL.GL_LIGHTING);
             GL.glEnable(GL.GL_LIGHT0);
             GL.glEnable(GL.GL_COLOR_MATERIAL);
-
 
             GL.glEnable(GL.GL_BLEND);
             GL.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
@@ -981,13 +979,15 @@ namespace OpenGL
         }
 
         float[] cubeXform = new float[16];
+
         private void MakeShadowMatrix(float[,] points)
         {
             float[] planeCoeff = new float[4];
             float dot;
 
             // Find the plane equation coefficients
-            // Find the normal based on the adjusted coordinate system
+            // Find the first three coefficients the same way we
+            // find a normal.
             calcNormal(points, planeCoeff);
 
             // Find the last coefficient by back substitutions
@@ -995,37 +995,37 @@ namespace OpenGL
                 (planeCoeff[0] * points[2, 0]) + (planeCoeff[1] * points[2, 1]) +
                 (planeCoeff[2] * points[2, 2]));
 
-            // Dot product of the plane and light position
+
+            // Dot product of plane and light position
             dot = planeCoeff[0] * lightPos[0] +
-                  planeCoeff[1] * lightPos[1] +
-                  planeCoeff[2] * lightPos[2] +
-                  planeCoeff[3];
+                    planeCoeff[1] * lightPos[2] +
+                    planeCoeff[2] * lightPos[1] +
+                    planeCoeff[3];
 
             // Now do the projection
-            // Adjust the cubeXform based on the new axis orientation
             // First column
-            cubeXform[0] = dot - lightPos[0] * planeCoeff[0];  // X axis
-            cubeXform[4] = 0.0f - lightPos[0] * planeCoeff[1]; // Y axis (up)
-            cubeXform[8] = 0.0f - lightPos[0] * planeCoeff[2]; // Z axis (forward)
-            cubeXform[12] = 0.0f - lightPos[3] * planeCoeff[3];
+            cubeXform[0] = dot - lightPos[0] * planeCoeff[0];
+            cubeXform[4] = 0.0f - lightPos[0] * planeCoeff[1];
+            cubeXform[8] = 0.0f - lightPos[0] * planeCoeff[2];
+            cubeXform[12] = 0.0f - lightPos[0] * planeCoeff[3];
 
             // Second column
-            cubeXform[1] = 0.0f - lightPos[1] * planeCoeff[0]; // X axis
-            cubeXform[5] = dot - lightPos[1] * planeCoeff[1];  // Y axis (up)
-            cubeXform[9] = 0.0f - lightPos[1] * planeCoeff[2];  // Z axis (forward)
-            cubeXform[13] = 0.0f - lightPos[3] * planeCoeff[3];
+            cubeXform[1] = 0.0f - (lightPos[2]) * planeCoeff[0];
+            cubeXform[5] = dot - (lightPos[2]) * planeCoeff[1];
+            cubeXform[9] = 0.0f - (lightPos[2]) * planeCoeff[2];
+            cubeXform[13] = 0.0f - (lightPos[2]) * planeCoeff[3];
 
             // Third Column
-            cubeXform[2] = 0.0f - lightPos[2] * planeCoeff[0]; // X axis
-            cubeXform[6] = 0.0f - lightPos[2] * planeCoeff[1]; // Y axis (up)
-            cubeXform[10] = dot - lightPos[2] * planeCoeff[2]; // Z axis (forward)
-            cubeXform[14] = 0.0f - lightPos[3] * planeCoeff[3];
+            cubeXform[2] = 0.0f - lightPos[1] * planeCoeff[0];
+            cubeXform[6] = 0.0f - lightPos[1] * planeCoeff[1];
+            cubeXform[10] = dot - lightPos[1] * planeCoeff[2];
+            cubeXform[14] = 0.0f - lightPos[1] * planeCoeff[3];
 
-            // Fourth Column (homogeneous coordinate)
-            cubeXform[3] = 0.0f; // Assuming the lightPos[3] is set for the perspective (w-component)
-            cubeXform[7] = 0.0f; // No change in Y for the homogeneous part
-            cubeXform[11] = 0.0f; // No change in Z for the homogeneous part
-            cubeXform[15] = dot - lightPos[3] * planeCoeff[3]; // Typically for perspective divide
+            // Fourth Column
+            cubeXform[3] = 0.0f - lightPos[3] * planeCoeff[0];
+            cubeXform[7] = 0.0f - lightPos[3] * planeCoeff[1];
+            cubeXform[11] = 0.0f - lightPos[3] * planeCoeff[2];
+            cubeXform[15] = dot - lightPos[3] * planeCoeff[3];
         }
 
         const int x = 0;
@@ -1192,7 +1192,7 @@ namespace OpenGL
         {
             if (i_IsShadow)
             {
-                GL.glColor3d(0.5, 0.5, 0.5);
+                GL.glColor3d(0.3, 0.3, 0.3);
             }
 
             GL.glPushMatrix();
@@ -1216,14 +1216,17 @@ namespace OpenGL
 
             GL.glPopMatrix();
 
-            GL.glPushMatrix();
+            if (!i_IsShadow)
+            {
+                GL.glPushMatrix();
 
-            GL.glRotatef(90f, 0.0f, 1f, 0.0f);
-            GL.glTranslatef(-12.0f, 8f, 0f);
+                GL.glRotatef(90f, 0.0f, 1f, 0.0f);
+                GL.glTranslatef(-12.0f, 8f, 0f);
 
-            m_Window.Draw(i_IsShadow);
+                m_Window.Draw(i_IsShadow);
 
-            GL.glPopMatrix();
+                GL.glPopMatrix();
+            }
 
             m_DressingTable.Draw(i_IsShadow);
 

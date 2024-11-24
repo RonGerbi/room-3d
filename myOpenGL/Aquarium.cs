@@ -61,9 +61,12 @@ namespace myOpenGL
                 GL.glDisable(GL.GL_TEXTURE_2D);
             }
 
-            foreach (Fish f in m_Fish)
+            if (!i_IsShadow)
             {
-                f.Draw();
+                foreach (Fish f in m_Fish)
+                {
+                    f.Draw();
+                }
             }
 
             // tank - left

@@ -28,8 +28,11 @@ namespace myOpenGL
         /// </summary>
         private void InitializeComponent()
         {
-            this.panel1 = new System.Windows.Forms.Panel();
             this.components = new System.ComponentModel.Container();
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.lightZPos = new System.Windows.Forms.HScrollBar();
+            this.lightYPos = new System.Windows.Forms.HScrollBar();
+            this.lightXPos = new System.Windows.Forms.HScrollBar();
             this.hScrollBar1 = new System.Windows.Forms.HScrollBar();
             this.hScrollBar2 = new System.Windows.Forms.HScrollBar();
             this.hScrollBar3 = new System.Windows.Forms.HScrollBar();
@@ -54,6 +57,7 @@ namespace myOpenGL
             this.numericUpDown5 = new System.Windows.Forms.NumericUpDown();
             this.numericUpDown6 = new System.Windows.Forms.NumericUpDown();
             this.updateTimer = new System.Windows.Forms.Timer(this.components);
+            this.panel1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown3)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).BeginInit();
@@ -63,15 +67,55 @@ namespace myOpenGL
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown5)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown6)).BeginInit();
             this.SuspendLayout();
-
+            // 
+            // panel1
+            // 
             this.panel1.BackColor = System.Drawing.SystemColors.ButtonFace;
+            this.panel1.Controls.Add(this.lightZPos);
+            this.panel1.Controls.Add(this.lightYPos);
+            this.panel1.Controls.Add(this.lightXPos);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(856, 576);
             this.panel1.TabIndex = 6;
             this.panel1.Resize += new System.EventHandler(this.panel1_Resize);
-
+            // 
+            // lightZPos
+            // 
+            this.lightZPos.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.lightZPos.Location = new System.Drawing.Point(724, 517);
+            this.lightZPos.Maximum = 30;
+            this.lightZPos.Minimum = 5;
+            this.lightZPos.Name = "lightZPos";
+            this.lightZPos.Size = new System.Drawing.Size(119, 17);
+            this.lightZPos.TabIndex = 19;
+            this.lightZPos.Value = 5;
+            this.lightZPos.Scroll += new System.Windows.Forms.ScrollEventHandler(this.lightZPos_Scroll);
+            // 
+            // lightYPos
+            // 
+            this.lightYPos.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.lightYPos.Location = new System.Drawing.Point(723, 477);
+            this.lightYPos.Maximum = 30;
+            this.lightYPos.Minimum = 10;
+            this.lightYPos.Name = "lightYPos";
+            this.lightYPos.Size = new System.Drawing.Size(119, 17);
+            this.lightYPos.TabIndex = 18;
+            this.lightYPos.Value = 10;
+            this.lightYPos.Scroll += new System.Windows.Forms.ScrollEventHandler(this.lightYPos_Scroll);
+            // 
+            // lightXPos
+            // 
+            this.lightXPos.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.lightXPos.Location = new System.Drawing.Point(724, 442);
+            this.lightXPos.Maximum = 30;
+            this.lightXPos.Minimum = 5;
+            this.lightXPos.Name = "lightXPos";
+            this.lightXPos.Size = new System.Drawing.Size(119, 17);
+            this.lightXPos.TabIndex = 17;
+            this.lightXPos.Value = 13;
+            this.lightXPos.Scroll += new System.Windows.Forms.ScrollEventHandler(this.lightXPos_Scroll);
             // 
             // hScrollBar1
             // 
@@ -392,6 +436,7 @@ namespace myOpenGL
             this.Name = "Form1";
             this.Text = "Room";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
+            this.panel1.ResumeLayout(false);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown3)).EndInit();
@@ -432,6 +477,9 @@ namespace myOpenGL
         private System.Windows.Forms.NumericUpDown numericUpDown5;
         private System.Windows.Forms.NumericUpDown numericUpDown6;
         private System.Windows.Forms.Timer updateTimer;
+        private System.Windows.Forms.HScrollBar lightZPos;
+        private System.Windows.Forms.HScrollBar lightYPos;
+        private System.Windows.Forms.HScrollBar lightXPos;
     }
 }
 
